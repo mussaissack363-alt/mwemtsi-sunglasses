@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Mwemtsi Sunglasses — Men</title>
+<style>
+  :root {
+    --gold: #d4af6a;
+    --ink: #0a0a0a;
+    --ink-soft: #121212;
+    --paper: #f5f2ec;
+    --red: #c62828;
+    --ease-cinema: cubic-bezier(0.77, 0, 0.175, 1);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--ink);
+    color: var(--paper);
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    overflow-x: hidden;
+  }
+
+  .nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 2rem clamp(1.5rem, 5vw, 4rem);
+    opacity: 1;
+    transform: none;
+    background: rgba(10,10,10,.82);
+    backdrop-filter: blur(10px);
+    padding-top: 1.2rem;
+    padding-bottom: 1.2rem;
+  }
+
+  .nav__logo {
+    font-size: 0.95rem;
+    letter-spacing: 0.5em;
+    text-indent: 0.5em;
+    font-weight: 300;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .nav__links {
+    display: flex;
+    gap: 2.2rem;
+    list-style: none;
+  }
+
+  .nav__links a {
+    color: var(--paper);
+    text-decoration: none;
+    font-size: 0.88rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    font-weight: 300;
+    opacity: .8;
+    transition: opacity .3s, color .3s;
+  }
+
+  .nav__links a:hover { opacity: 1; color: var(--gold); }
+
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-start;
+    padding: clamp(5rem, 10vw, 9rem) clamp(1.5rem, 5vw, 4rem) 4rem;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(to top, rgba(8,8,9,.94) 0%, rgba(8,8,9,.45) 55%, rgba(8,8,9,.12) 100%),
+      url("Man_wearing_high-end_sunglasses_2K_20261020005015.jpg") center 25% / cover no-repeat;
+    z-index: 0;
+    transform: scale(1.02);
+    will-change: transform;
+    animation: slowZoom 14s ease-out forwards;
+  }
+
+  @keyframes slowZoom {
+    to { transform: scale(1.08); }
+  }
+
+  .hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(8,8,9,1) 0%, rgba(8,8,9,0.2) 60%);
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .hero__content {
+    position: relative;
+    z-index: 2;
+    max-width: 900px;
+  }
+
+  .hero__label {
+    font-size: 0.82rem;
+    letter-spacing: 0.45em;
+    text-indent: 0.45em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1.2rem;
+  }
+
+  .hero__title {
+    font-size: clamp(3rem, 6vw, 5rem);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    line-height: 0.95;
+    margin-bottom: 1.4rem;
+  }
+
+  .hero__sub {
+    font-size: 1.05rem;
+    font-weight: 300;
+    line-height: 1.7;
+    opacity: .85;
+    max-width: 520px;
+    margin-bottom: 2rem;
+  }
+
+  .section {
+    padding: clamp(5rem, 10vw, 8rem) clamp(1.5rem, 5vw, 4rem);
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .kicker {
+    font-size: 0.82rem;
+    letter-spacing: 0.45em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 400;
+    margin-bottom: 1.1rem;
+  }
+
+  .section__title {
+    font-size: clamp(2rem, 4.4vw, 3.4rem);
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    line-height: 1.14;
+    margin-bottom: 1rem;
+    max-width: 720px;
+  }
+
+  .section__lede {
+    font-size: 1.05rem;
+    font-weight: 300;
+    line-height: 1.75;
+    opacity: .75;
+    max-width: 560px;
+  }
+
+  /* Scroll-driven story with video */
+  .story {
+    position: relative;
+    height: 300vh;
+  }
+
+  .story__sticky {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+  }
+
+  .story__video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(.4) saturate(1.1);
+  }
+
+  .story__overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 clamp(1.5rem, 5vw, 4rem);
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  .story__text {
+    font-size: clamp(4rem, 10vw, 9rem);
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    line-height: 0.9;
+    text-transform: uppercase;
+    text-align: center;
+    opacity: 0;
+    transform: translateY(40px);
+    will-change: opacity, transform, color;
+    transition: opacity 0.8s var(--ease-cinema), transform 0.8s var(--ease-cinema), color 0.8s ease;
+    color: #000;
+    text-shadow: 0 2px 40px rgba(255,255,255,.08);
+  }
+
+  .story__text.is-in {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .story__text.is-black { color: #000; }
+  .story__text.is-red { color: var(--red); }
+
+  .story__progress {
+    position: absolute;
+    left: 50%;
+    bottom: 3rem;
+    transform: translateX(-50%);
+    z-index: 3;
+    width: min(320px, 60vw);
+    height: 2px;
+    background: rgba(245,242,236,.25);
+  }
+
+  .story__progress span {
+    display: block;
+    height: 100%;
+    width: 0%;
+    background: var(--gold);
+  }
+
+  /* Products */
+  .products__head {
+    margin-bottom: 3.5rem;
+  }
+
+  .products__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: clamp(1.5rem, 3vw, 2.5rem);
+  }
+
+  .product-card {
+    background: var(--ink-soft);
+    border: 1px solid rgba(245,242,236,.08);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: transform .4s var(--ease-cinema), border-color .4s;
+    position: relative;
+  }
+
+  .product-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(212,175,106,.4);
+  }
+
+  .product-card__media {
+    position: relative;
+    aspect-ratio: 4/5;
+    background: radial-gradient(ellipse at 50% 30%, rgba(245,242,236,.05), rgba(10,10,10,.95));
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+  }
+
+  .product-card__img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: transform 1.2s var(--ease-cinema);
+  }
+
+  .product-card:hover .product-card__img {
+    transform: scale(1.03);
+  }
+
+  .product-card__upload {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    background: rgba(10,10,10,.92);
+    opacity: 0;
+    transition: opacity .3s ease;
+    border: 2px dashed rgba(245,242,236,.2);
+    margin: 1rem;
+    text-align: center;
+    padding: 1rem;
+  }
+
+  .product-card__media:hover .product-card__upload {
+    opacity: 1;
+  }
+
+  .product-card__upload-label {
+    font-size: 0.78rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    cursor: pointer;
+    padding: 0.6rem 1rem;
+    border: 1px solid rgba(245,242,236,.4);
+    background: rgba(10,10,10,.6);
+    transition: all .3s;
+  }
+
+  .product-card__upload-label:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  .product-card__upload-input {
+    display: none;
+  }
+
+  .product-card__upload-note {
+    font-size: 0.72rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    opacity: .6;
+  }
+
+  .product-card__content {
+    padding: 1.8rem 1.8rem 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  .product-card__name {
+    font-size: clamp(1.2rem, 2vw, 1.5rem);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    line-height: 1.15;
+    outline: none;
+    padding: 0.25rem 0;
+    border-bottom: 1px dashed transparent;
+    transition: border-color .2s;
+  }
+
+  .product-card__name:focus {
+    border-bottom-color: rgba(212,175,106,.5);
+  }
+
+  .product-card__name[contenteditable="true"]:empty::before {
+    content: "Product Name";
+    opacity: .4;
+  }
+
+  .product-card__price {
+    font-size: 1.05rem;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    color: var(--gold);
+    outline: none;
+    padding: 0.25rem 0;
+    border-bottom: 1px dashed transparent;
+    transition: border-color .2s;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .product-card__price:focus {
+    border-bottom-color: rgba(212,175,106,.5);
+  }
+
+  .product-card__price[contenteditable="true"]:empty::before {
+    content: "TZS 0";
+    opacity: .4;
+  }
+
+  .product-card__meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(245,242,236,.08);
+  }
+
+  .product-card__tag {
+    font-size: 0.72rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    opacity: .6;
+  }
+
+  .product-card__hint {
+    font-size: 0.72rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    opacity: .5;
+  }
+
+  .footer {
+    border-top: 1px solid rgba(245,242,236,.14);
+    padding: clamp(3rem, 6vw, 5rem) clamp(1.5rem, 5vw, 4rem);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .footer__brand {
+    font-size: 0.95rem;
+    letter-spacing: 0.5em;
+    text-indent: 0.5em;
+    text-transform: uppercase;
+    font-weight: 300;
+  }
+
+  .footer__links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+    flex-wrap: wrap;
+  }
+
+  .footer__links a {
+    color: var(--paper);
+    text-decoration: none;
+    font-size: 0.8rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    font-weight: 300;
+    opacity: .7;
+    transition: opacity .3s, color .3s;
+  }
+
+  .footer__links a:hover { opacity: 1; color: var(--gold); }
+
+  .footer__copy {
+    font-size: 0.78rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    opacity: .55;
+    font-weight: 300;
+  }
+
+  @media (max-width: 720px) {
+    .nav__links { display: none; }
+    .footer { flex-direction: column; align-items: flex-start; }
+    .story { height: 220vh; }
+    .story__text { font-size: clamp(2.6rem, 12vw, 5rem); }
+    .hero__title { font-size: clamp(2.6rem, 10vw, 4rem); }
+    .products__grid { grid-template-columns: 1fr; }
+    .story__video { object-fit: cover; }
+  }
+</style>
+</head>
+<body>
+  <nav class="nav">
+    <a href="index.html" class="nav__logo">Mwemtsi</a>
+    <ul class="nav__links">
+      <li><a href="index.html#services">About</a></li>
+      <li><a href="index.html#categories">Collection</a></li>
+      <li><a href="index.html#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <section class="hero">
+    <div class="hero__content">
+      <p class="hero__label">The Men's Edit</p>
+      <h1 class="hero__title">For Him</h1>
+      <p class="hero__sub">Bold, structured frames built for sharp lines and long days under the sun.</p>
+    </div>
+  </section>
+
+  <section class="story" id="story">
+    <div class="story__sticky">
+      <video
+        class="story__video"
+        id="storyVideo"
+        src="Man_hair_blowing_in_wind_20261020070525.mp4"
+        muted
+        playsinline
+        preload="auto"
+      ></video>
+      <div class="story__overlay">
+        <div class="story__text" id="storyText">UNAPOLOGETICALLY BOLD</div>
+      </div>
+      <div class="story__progress"><span id="storyBar"></span></div>
+    </div>
+  </section>
+
+  <section class="products section" id="products">
+    <div class="products__head">
+      <p class="kicker">Men's Collection</p>
+      <h2 class="section__title">Precision. Presence. Power.</h2>
+      <p class="section__lede">Every pair speaks to confidence — built to hold their shape in the Dar es Salaam sun. Tap any field below to edit names and prices in TZS. Upload your own product images — perfect for admin management.</p>
+    </div>
+
+    <div class="products__grid" id="productsGrid"></div>
+  </section>
+
+  <footer class="footer" id="contact">
+    <div class="footer__brand">Mwemtsi</div>
+    <ul class="footer__links">
+      <li><a href="about.html#about">About</a></li>
+      <li><a href="about.html#contact">Contact</a></li>
+      <li><a href="about.html#delivery">Delivery</a></li>
+      <li><a href="about.html#returns">Returns</a></li>
+    </ul>
+    <span class="footer__copy">Dar es Salaam, Tanzania — © Mwemtsi Sunglasses</span>
+  </footer>
+
+  
+  
+  
+  
+</body>
+</html>
+  <script>
+
+    const story = document.getElementById('story');
+    const storyVideo = document.getElementById('storyVideo');
+    const storyText = document.getElementById('storyText');
+    const storyBar = document.getElementById('storyBar');
+
+    let storyDuration = 10;
+    let ticking = false;
+    const isCoarsePointer = window.matchMedia('(pointer: coarse)').matches;
+
+    const storyPhrases = [
+      { text: 'UNAPOLOGETICALLY BOLD', color: 'black' },
+      { text: 'FOR HIM', color: 'red' },
+      { text: 'ENGINEERED TO LAST', color: 'black' },
+      { text: 'CUT WITH PRECISION', color: 'red' }
+    ];
+
+    let phraseIndex = 0;
+
+    function updateStoryText(progress) {
+      const total = storyPhrases.length;
+      const idx = Math.min(Math.floor(progress * total), total - 1);
+      if (idx !== phraseIndex) {
+        phraseIndex = idx;
+        const p = storyPhrases[idx];
+        storyText.textContent = p.text;
+        storyText.classList.remove('is-black', 'is-red');
+        storyText.classList.add(`is-${p.color}`);
+        storyText.classList.add('is-in');
+      }
+    }
+
+    function onScroll() {
+      const rect = story.getBoundingClientRect();
+      const total = story.offsetHeight - window.innerHeight;
+      if (total <= 0) {
+        ticking = false;
+        return;
+      }
+      const progress = Math.min(1, Math.max(0, -rect.top / total));
+
+      if (storyVideo && storyDuration && !isCoarsePointer) {
+        if (storyVideo.readyState >= 1) {
+          try { storyVideo.currentTime = progress * storyDuration; } catch (e) {}
+        }
+      }
+
+      if (storyBar) storyBar.style.width = (progress * 100) + '%';
+      updateStoryText(progress);
+
+      if (progress > 0.08) {
+        storyText && storyText.classList.add('is-in');
+      } else {
+        storyText && storyText.classList.remove('is-in');
+      }
+
+      ticking = false;
+    }
+
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(onScroll);
+      }
+    }, { passive: true });
+
+    storyVideo.addEventListener('loadedmetadata', () => {
+      if (storyVideo.duration && isFinite(storyVideo.duration)) {
+        storyDuration = storyVideo.duration;
+      }
+    });
+
+    storyVideo.addEventListener('loadeddata', () => {
+      storyVideo.currentTime = 0.01;
+      onScroll();
+    }, { once: true });
+    storyVideo.addEventListener('canplay', onScroll, { once: true });
+
+    if (isCoarsePointer) {
+      storyVideo.loop = true;
+      storyVideo.setAttribute('preload', 'metadata');
+      const mobileIO = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) storyVideo.play().catch(() => {});
+          else storyVideo.pause();
+        });
+      }, { threshold: 0.25 });
+      mobileIO.observe(story);
+      window.removeEventListener('scroll', () => {});
+    }
+
+    // Products
+    const productsGrid = document.getElementById('productsGrid');
+    const category = 'men';
+    
+    function formatTZS(val) {
+      if (val === null || val === undefined) return 'TZS 0';
+      const num = String(val).replace(/[^0-9.]/g, '');
+      if (!num || isNaN(parseFloat(num))) return 'TZS 0';
+      return 'TZS ' + parseInt(num).toLocaleString('en-US');
+    }
+    
+    function createProductCard(p) {
+      const card = document.createElement('article');
+      card.className = 'product-card';
+      card.dataset.productId = p.id;
+      
+      const media = document.createElement('div');
+      media.className = 'product-card__media';
+      
+      const img = document.createElement('img');
+      img.className = 'product-card__img';
+      img.src = p.image_url || 'Man_wearing_high-end_sunglasses_2K_20261020005015.jpg';
+      img.alt = p.name;
+      
+      const upload = document.createElement('div');
+      upload.className = 'product-card__upload';
+      
+      const uploadLabel = document.createElement('label');
+      uploadLabel.className = 'product-card__upload-label';
+      uploadLabel.textContent = 'Change Image';
+      
+      const uploadInput = document.createElement('input');
+      uploadInput.type = 'file';
+      uploadInput.accept = 'image/*';
+      uploadInput.className = 'product-card__upload-input';
+      
+      uploadInput.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (file && window.mwemtsiProducts && p.id) {
+          const reader = new FileReader();
+          reader.onload = async (ev) => {
+            const dataUrl = ev.target.result;
+            img.src = dataUrl;
+            await window.mwemtsiProducts.saveProduct({
+              id: p.id,
+              name: name.textContent.trim(),
+              price_tzs: parseFloat(price.textContent.replace(/[^0-9.]/g, '')) || 0,
+              image_url: dataUrl
+            });
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+      
+      uploadLabel.appendChild(uploadInput);
+      const uploadNote = document.createElement('span');
+      uploadNote.className = 'product-card__upload-note';
+      uploadNote.textContent = 'Image upload (admin)';
+      
+      upload.appendChild(uploadLabel);
+      upload.appendChild(uploadNote);
+      
+      media.appendChild(img);
+      media.appendChild(upload);
+      
+      const content = document.createElement('div');
+      content.className = 'product-card__content';
+      
+      const name = document.createElement('h3');
+      name.className = 'product-card__name';
+      name.contentEditable = true;
+      name.spellcheck = false;
+      name.textContent = p.name || '';
+      name.setAttribute('aria-label', 'Product name (editable)');
+      
+      const price = document.createElement('div');
+      price.className = 'product-card__price';
+      price.contentEditable = true;
+      price.spellcheck = false;
+      price.textContent = formatTZS(p.price_tzs);
+      price.setAttribute('aria-label', 'Price in TZS (editable)');
+      
+      let saveTimeout;
+      async function saveChanges() {
+        if (window.mwemtsiProducts && p.id) {
+          const priceNum = parseFloat(price.textContent.replace(/[^0-9.]/g, '')) || 0;
+          await window.mwemtsiProducts.saveProduct({
+            id: p.id,
+            name: name.textContent.trim(),
+            price_tzs: priceNum,
+            image_url: img.src
+          });
+        }
+      }
+      
+      name.addEventListener('input', () => {
+        clearTimeout(saveTimeout);
+        saveTimeout = setTimeout(saveChanges, 500);
+      });
+      name.addEventListener('blur', saveChanges);
+      
+      price.addEventListener('input', () => {
+        const cursor = window.getSelection();
+        const pos = cursor.rangeCount > 0 ? cursor.getRangeAt(0).startOffset : 0;
+        const formatted = formatTZS(price.textContent);
+        price.textContent = formatted;
+        try {
+          const range = document.createRange();
+          const sel = window.getSelection();
+          range.setStart(price.childNodes[0] || price, Math.min(pos, formatted.length));
+          range.collapse(true);
+          sel.removeAllRanges();
+          sel.addRange(range);
+        } catch (e) {}
+        clearTimeout(saveTimeout);
+        saveTimeout = setTimeout(saveChanges, 500);
+      });
+      
+      price.addEventListener('blur', () => {
+        if (!price.textContent.trim()) {
+          price.textContent = 'TZS 0';
+        } else {
+          price.textContent = formatTZS(price.textContent);
+        }
+        saveChanges();
+      });
+      
+      const meta = document.createElement('div');
+      meta.className = 'product-card__meta';
+      const tag = document.createElement('span');
+      tag.className = 'product-card__tag';
+      tag.textContent = 'Men\'s Sunglasses';
+      
+      meta.appendChild(tag);
+      
+      content.appendChild(name);
+      content.appendChild(price);
+      content.appendChild(meta);
+      
+      card.appendChild(media);
+      card.appendChild(content);
+      return card;
+    }
+    
+    async function initProducts() {
+      const products = window.mwemtsiProducts ? await window.mwemtsiProducts.loadProducts(category) : null;
+      if (products && products.length > 0) {
+        productsGrid.innerHTML = '';
+        products.forEach((p) => {
+          productsGrid.appendChild(createProductCard(p));
+        });
+      } else {
+        const defaultProducts = [
+          { id: 'default-1', name: 'Mwemtsi Apex', price_tzs: 275000, image_url: 'Man_wearing_high-end_sunglasses_2K_20261020005015.jpg' },
+          { id: 'default-2', name: 'Mwemtsi Orion', price_tzs: 225000, image_url: 'Man_wearing_sunglasses_2K_20261019231842.jpg' },
+          { id: 'default-3', name: 'Mwemtsi Vertex', price_tzs: 195000, image_url: 'Man_wearing_high-end_sunglasses_2K_20261020005015.jpg' },
+          { id: 'default-4', name: 'Mwemtsi Edge', price_tzs: 245000, image_url: 'Man_wearing_sunglasses_2K_20261019231842.jpg' },
+          { id: 'default-5', name: 'Mwemtsi Stealth', price_tzs: 285000, image_url: 'Man_wearing_high-end_sunglasses_2K_20261020005015.jpg' },
+          { id: 'default-6', name: 'Mwemtsi Forte', price_tzs: 215000, image_url: 'Man_wearing_sunglasses_2K_20261019231842.jpg' },
+        ];
+        productsGrid.innerHTML = '';
+        defaultProducts.forEach((p) => {
+          productsGrid.appendChild(createProductCard(p));
+        });
+      }
+    }
+    
+    initProducts();
+    onScroll();
+  
+
+
+
+
+
+
+  </script>
+</body>
+</html>

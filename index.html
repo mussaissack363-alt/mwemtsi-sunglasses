@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Mwemtsi Sunglasses — See Beyond</title>
+<style>
+  :root {
+    --gold: #d4af6a;
+    --ink: #0a0a0a;
+    --ink-soft: #121212;
+    --paper: #f5f2ec;
+    --rose: #d9a7a0;
+    --ease-cinema: cubic-bezier(0.77, 0, 0.175, 1);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--ink);
+    color: var(--paper);
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    overflow-x: hidden;
+  }
+
+  body.locked { overflow: hidden; height: 100vh; }
+
+  /* ============================================================
+     INTRO — image → video cinematic entry
+     ============================================================ */
+  .intro {
+    position: relative;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .stage {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+  }
+
+  .stage__media {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    will-change: transform, opacity;
+  }
+
+  .stage__image {
+    z-index: 2;
+    transform: scale(1);
+    transition:
+      transform 2.4s var(--ease-cinema),
+      opacity 1.6s var(--ease-cinema) 0.6s;
+  }
+
+  .stage__video {
+    z-index: 1;
+    opacity: 0;
+    transform: scale(1.08);
+    transition:
+      opacity 1.8s var(--ease-cinema) 0.4s,
+      transform 6s var(--ease-cinema);
+  }
+
+  .stage.is-playing .stage__image {
+    transform: scale(1.35);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .stage.is-playing .stage__video {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .stage::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    background:
+      linear-gradient(to bottom, rgba(10,10,10,.45) 0%, transparent 30%, transparent 55%, rgba(10,10,10,.8) 100%);
+    opacity: 0;
+    transition: opacity 1.5s ease 1s;
+    pointer-events: none;
+  }
+
+  .stage.is-playing::after { opacity: 1; }
+
+  /* Enter prompt */
+  .enter {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    padding-bottom: 12vh;
+    cursor: pointer;
+    background: transparent;
+    border: 0;
+    width: 100%;
+    color: inherit;
+    transition: opacity .8s ease, visibility .8s;
+  }
+
+  .enter.is-hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .enter__brand {
+    position: absolute;
+    top: 2.2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1rem;
+    letter-spacing: 0.55em;
+    text-indent: 0.55em;
+    font-weight: 300;
+    text-transform: uppercase;
+    text-shadow: 0 1px 12px rgba(0,0,0,.6);
+  }
+
+  .enter__hint {
+    font-size: 0.9rem;
+    letter-spacing: 0.4em;
+    text-indent: 0.4em;
+    text-transform: uppercase;
+    font-weight: 300;
+    opacity: .85;
+    text-shadow: 0 1px 12px rgba(0,0,0,.7);
+    animation: breathe 2.6s ease-in-out infinite;
+  }
+
+  .enter__ring {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 1.4rem;
+    border: 1px solid rgba(245,242,236,.7);
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    transition: transform .5s var(--ease-cinema), border-color .5s;
+    backdrop-filter: blur(2px);
+    background: rgba(10,10,10,.15);
+  }
+
+  .enter:hover .enter__ring {
+    transform: scale(1.12);
+    border-color: var(--gold);
+  }
+
+  .enter__ring svg { width: 18px; height: 18px; fill: var(--paper); margin-left: 3px; }
+
+  @keyframes breathe {
+    0%, 100% { opacity: .5; }
+    50% { opacity: 1; }
+  }
+
+  /* ============================================================
+     NAV
+     ============================================================ */
+  .nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 2rem clamp(1.5rem, 5vw, 4rem);
+    opacity: 0;
+    transform: translateY(-14px);
+    pointer-events: none;
+    transition: opacity 1s ease, transform 1s ease, background .4s, backdrop-filter .4s;
+  }
+
+  body.revealed .nav {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+    transition-delay: .3s;
+  }
+
+  body.scrolled .nav {
+    background: rgba(10,10,10,.82);
+    backdrop-filter: blur(10px);
+    padding-top: 1.2rem;
+    padding-bottom: 1.2rem;
+    transition-delay: 0s;
+  }
+
+  .nav__logo {
+    font-size: 0.95rem;
+    letter-spacing: 0.5em;
+    text-indent: 0.5em;
+    font-weight: 300;
+    text-transform: uppercase;
+  }
+
+  .nav__links {
+    display: flex;
+    gap: 2.2rem;
+    list-style: none;
+  }
+
+  .nav__links a {
+    color: var(--paper);
+    text-decoration: none;
+    font-size: 0.88rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    font-weight: 300;
+    opacity: .8;
+    transition: opacity .3s, color .3s;
+  }
+
+  .nav__links a:hover { opacity: 1; color: var(--gold); }
+
+  /* Hero inside intro */
+  .hero {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 clamp(1.5rem, 5vw, 4rem);
+    max-width: 1100px;
+    opacity: 0;
+    transform: translateY(24px);
+    pointer-events: none;
+    transition: opacity 1s var(--ease-cinema), transform 1s var(--ease-cinema);
+  }
+
+  body.revealed .hero {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+    transition-delay: .55s;
+  }
+
+  .hero__eyebrow {
+    font-size: 0.95rem;
+    letter-spacing: 0.45em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 400;
+    margin-bottom: 1.2rem;
+  }
+
+  .hero__title {
+    font-family: Georgia, "Times New Roman", serif;
+    font-weight: 400;
+    font-size: clamp(2.6rem, 6vw, 4.6rem);
+    line-height: 1.08;
+    margin-bottom: 1.4rem;
+  }
+
+  .hero__title em { font-style: italic; color: var(--gold); }
+
+  .hero__sub {
+    font-size: 1.05rem;
+    font-weight: 300;
+    line-height: 1.7;
+    opacity: .85;
+    max-width: 440px;
+    margin-bottom: 2.2rem;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.9rem;
+    padding: 0.95rem 2.2rem;
+    border: 1px solid var(--paper);
+    background: var(--paper);
+    color: var(--ink);
+    text-decoration: none;
+    font-size: 0.88rem;
+    letter-spacing: 0.3em;
+    text-indent: 0.3em;
+    text-transform: uppercase;
+    font-weight: 400;
+    cursor: pointer;
+    transition: background .35s, color .35s, border-color .35s, transform .35s;
+  }
+
+  .btn:hover {
+    background: transparent;
+    color: var(--paper);
+    border-color: var(--gold);
+    transform: translateY(-2px);
+  }
+
+  /* Scroll cue */
+  .scroll-cue {
+    position: absolute;
+    bottom: 2.2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 6;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .7rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.35em;
+    text-indent: 0.35em;
+    text-transform: uppercase;
+    font-weight: 300;
+    opacity: 0;
+    transition: opacity 1s ease 1.1s;
+  }
+
+  body.revealed .scroll-cue { opacity: .75; }
+
+  .scroll-cue__line {
+    width: 1px;
+    height: 46px;
+    background: linear-gradient(to bottom, var(--paper), transparent);
+    animation: cue 2s ease-in-out infinite;
+    transform-origin: top;
+  }
+
+  @keyframes cue {
+    0% { transform: scaleY(0); opacity: 0; }
+    40% { transform: scaleY(1); opacity: 1; }
+    100% { transform: scaleY(1); opacity: 0; }
+  }
+
+  /* ============================================================
+     SHARED SECTION PIECES
+     ============================================================ */
+  .section {
+    padding: clamp(5rem, 10vw, 9rem) clamp(1.5rem, 5vw, 4rem);
+    max-width: 1240px;
+    margin: 0 auto;
+  }
+
+  .kicker {
+    font-size: 0.82rem;
+    letter-spacing: 0.45em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 400;
+    margin-bottom: 1.1rem;
+  }
+
+  .section__title {
+    font-family: Georgia, "Times New Roman", serif;
+    font-weight: 400;
+    font-size: clamp(2rem, 4.4vw, 3.4rem);
+    line-height: 1.14;
+    margin-bottom: 1rem;
+    max-width: 720px;
+  }
+
+  .section__lede {
+    font-size: 1.05rem;
+    font-weight: 300;
+    line-height: 1.75;
+    opacity: .75;
+    max-width: 560px;
+  }
+
+  /* Reveal on scroll */
+  .reveal {
+    opacity: 0;
+    transform: translateY(34px);
+    transition: opacity 1s var(--ease-cinema), transform 1s var(--ease-cinema);
+  }
+
+  .reveal.is-in { opacity: 1; transform: none; }
+
+  /* ============================================================
+     SERVICES / TRUST
+     ============================================================ */
+  .services {
+    position: relative;
+    overflow: hidden;
+    background: var(--ink);
+  }
+
+  .services__bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: .5;
+  }
+
+  .services::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background:
+      radial-gradient(120% 90% at 80% 0%, rgba(212,175,106,.1), transparent 55%),
+      linear-gradient(to bottom, rgba(10,10,10,.85) 0%, rgba(10,10,10,.55) 40%, rgba(10,10,10,.9) 100%);
+    pointer-events: none;
+  }
+
+  .services .section {
+    position: relative;
+    z-index: 2;
+  }
+
+  .services__head { margin-bottom: 3.5rem; }
+
+  .services__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1px;
+    background: rgba(245,242,236,.14);
+    border: 1px solid rgba(245,242,236,.14);
+    backdrop-filter: blur(2px);
+  }
+
+  .service {
+    background: rgba(10,10,10,.62);
+    padding: 2.4rem 2rem 2.6rem;
+    min-height: 220px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    transition: background .4s;
+  }
+
+  .service:hover { background: rgba(18,18,18,.85); }
+
+  .service__num {
+    font-size: 0.72rem;
+    letter-spacing: 0.3em;
+    color: var(--gold);
+    font-weight: 400;
+  }
+
+  .service__title {
+    font-family: Georgia, "Times New Roman", serif;
+    font-weight: 400;
+    font-size: 1.4rem;
+    line-height: 1.25;
+  }
+
+  .service__text {
+    font-size: 0.95rem;
+    font-weight: 300;
+    line-height: 1.65;
+    opacity: .7;
+    margin-top: auto;
+  }
+
+  /* ============================================================
+     SCROLL-DRIVEN VIDEO
+     ============================================================ */
+  .scrub {
+    position: relative;
+    height: 260vh;
+  }
+
+  .scrub__sticky {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+  }
+
+  .scrub__video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(.62) saturate(1.05);
+  }
+
+  .scrub__overlay {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    padding: 0 clamp(1.5rem, 5vw, 4rem);
+    pointer-events: none;
+  }
+
+  .scrub__kicker {
+    font-size: 0.82rem;
+    letter-spacing: 0.45em;
+    text-indent: 0.45em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1.2rem;
+    opacity: 0;
+    transform: translateY(18px);
+    transition: opacity .7s ease, transform .7s ease;
+  }
+
+  .scrub__line {
+    font-family: Georgia, "Times New Roman", serif;
+    font-weight: 400;
+    font-size: clamp(2.2rem, 6vw, 4.4rem);
+    line-height: 1.12;
+    opacity: 0;
+    transform: translateY(26px);
+    transition: opacity .9s ease, transform .9s ease;
+  }
+
+  .scrub__line em { font-style: italic; color: var(--gold); }
+
+  .scrub__overlay.is-in .scrub__kicker,
+  .scrub__overlay.is-in .scrub__line { opacity: 1; transform: none; }
+
+  .scrub__progress {
+    position: absolute;
+    left: 50%;
+    bottom: 3rem;
+    transform: translateX(-50%);
+    z-index: 3;
+    width: min(320px, 60vw);
+    height: 2px;
+    background: rgba(245,242,236,.25);
+  }
+
+  .scrub__progress span {
+    display: block;
+    height: 100%;
+    width: 0%;
+    background: var(--gold);
+  }
+
+  /* ============================================================
+     MEN / WOMEN CATEGORIES
+     ============================================================ */
+  .categories {
+    background: var(--ink);
+    padding: clamp(5rem, 10vw, 9rem) 0 clamp(4rem, 8vw, 7rem);
+  }
+
+  .categories__head {
+    padding: 0 clamp(1.5rem, 5vw, 4rem);
+    max-width: 1240px;
+    margin: 0 auto 3.5rem;
+  }
+
+  .cat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+  }
+
+  .cat {
+    position: relative;
+    min-height: 78vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: clamp(2.5rem, 4vw, 4rem);
+    text-decoration: none;
+    color: inherit;
+    overflow: hidden;
+    transition: transform .8s var(--ease-cinema);
+  }
+
+  .cat::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transition: transform 1.2s var(--ease-cinema);
+  }
+
+  .cat:hover::before { transform: scale(1.05); }
+
+  .cat > * { position: relative; z-index: 2; }
+
+  .cat__label {
+    font-size: 0.82rem;
+    letter-spacing: 0.45em;
+    text-indent: 0.45em;
+    text-transform: uppercase;
+    margin-bottom: 1.2rem;
+  }
+
+  .cat__name {
+    font-size: clamp(2.4rem, 5vw, 4rem);
+    line-height: 1;
+    margin-bottom: 1.4rem;
+  }
+
+  .cat__line {
+    font-size: 1rem;
+    font-weight: 300;
+    line-height: 1.6;
+    max-width: 360px;
+    margin-bottom: 2rem;
+    opacity: .85;
+  }
+
+  .cat__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: .8rem;
+    font-size: 0.8rem;
+    letter-spacing: 0.3em;
+    text-indent: 0.3em;
+    text-transform: uppercase;
+    font-weight: 400;
+    padding-bottom: .4rem;
+    border-bottom: 1px solid currentColor;
+    align-self: flex-start;
+    transition: gap .4s var(--ease-cinema);
+  }
+
+  .cat:hover .cat__cta { gap: 1.5rem; }
+
+  /* Men — sharp, dark, masculine */
+  .cat--men::before {
+    background:
+      linear-gradient(to top, rgba(8,8,9,.94) 0%, rgba(8,8,9,.45) 55%, rgba(8,8,9,.12) 100%),
+      url("Man_wearing_high-end_sunglasses_2K_20261020005015.jpg") center 25% / cover no-repeat;
+  }
+
+  .cat--men { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; }
+  .cat--men .cat__label { color: var(--gold); }
+  .cat--men .cat__name { font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
+  .cat--men .cat__cta { color: var(--gold); }
+
+  /* Women — soft, warm, editorial */
+  .cat--women::before {
+    background:
+      linear-gradient(to top, rgba(20,10,10,.9) 0%, rgba(40,18,18,.4) 55%, rgba(60,28,28,.15) 100%),
+      url("Woman_wearing_stylish_sunglasses_2K_20261020005135.jpg") center 25% / cover no-repeat;
+  }
+
+  .cat--women { font-family: Georgia, "Times New Roman", serif; }
+  .cat--women .cat__label {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    color: var(--rose);
+  }
+  .cat--women .cat__name { font-style: italic; font-weight: 400; letter-spacing: 0.01em; }
+  .cat--women .cat__line { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; }
+  .cat--women .cat__cta { color: var(--rose); }
+
+  /* ============================================================
+     FOOTER
+     ============================================================ */
+  .footer {
+    border-top: 1px solid rgba(245,242,236,.14);
+    padding: clamp(3rem, 6vw, 5rem) clamp(1.5rem, 5vw, 4rem);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1240px;
+    margin: 0 auto;
+  }
+
+  .footer__brand {
+    font-size: 0.95rem;
+    letter-spacing: 0.5em;
+    text-indent: 0.5em;
+    text-transform: uppercase;
+    font-weight: 300;
+  }
+
+  .footer__links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+    flex-wrap: wrap;
+  }
+
+  .footer__links a {
+    color: var(--paper);
+    text-decoration: none;
+    font-size: 0.8rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    font-weight: 300;
+    opacity: .7;
+    transition: opacity .3s, color .3s;
+  }
+
+  .footer__links a:hover { opacity: 1; color: var(--gold); }
+
+  .footer__copy {
+    font-size: 0.78rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    opacity: .55;
+    font-weight: 300;
+  }
+
+  /* Replay control */
+  .replay {
+    position: fixed;
+    right: clamp(1.5rem, 5vw, 4rem);
+    bottom: 2rem;
+    z-index: 45;
+    background: rgba(10,10,10,.5);
+    border: 1px solid rgba(245,242,236,.35);
+    color: var(--paper);
+    font-size: 0.75rem;
+    letter-spacing: 0.3em;
+    text-indent: 0.3em;
+    text-transform: uppercase;
+    padding: 0.6rem 1.1rem;
+    cursor: pointer;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .6s ease, border-color .3s;
+    backdrop-filter: blur(4px);
+  }
+
+  .replay.is-visible { opacity: .7; pointer-events: auto; }
+  .replay:hover { border-color: var(--gold); opacity: 1; }
+
+  /* ============================================================
+     RESPONSIVE
+     ============================================================ */
+  @media (max-width: 820px) {
+    .cat-grid { grid-template-columns: 1fr; }
+    .cat { min-height: 62vh; }
+  }
+
+  @media (max-width: 720px) {
+    .nav__links { display: none; }
+    .footer { flex-direction: column; align-items: flex-start; }
+    .hero { max-width: 100%; }
+    .hero__title { font-size: clamp(2.2rem, 8vw, 3.4rem); }
+    .enter__brand { font-size: 0.8rem; letter-spacing: 0.4em; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition-duration: .001ms !important; animation: none !important; }
+    html { scroll-behavior: auto; }
+  }
+</style>
+</head>
+<body class="locked">
+
+  <!-- ==================== NAV ==================== -->
+  <nav class="nav" id="nav">
+    <a href="#intro" class="nav__logo" style="text-decoration:none;color:inherit;">Mwemtsi</a>
+    <ul class="nav__links">
+      <li><a href="#services">About</a></li>
+      <li><a href="#categories">Collection</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- ==================== INTRO ==================== -->
+  <section class="intro" id="intro">
+    <div class="stage" id="stage">
+      <video
+        class="stage__media stage__video"
+        id="introVideo"
+        src="Camera_zooms_into_sunglasses_20261019231724.mp4"
+        muted
+        loop
+        playsinline
+        preload="auto"
+      ></video>
+      <img
+        class="stage__media stage__image"
+        src="Man_wearing_sunglasses_2K_20261019231842.jpg"
+        alt="Man wearing Mwemtsi Sunglasses"
+      />
+    </div>
+
+    <button class="enter" id="enter" aria-label="Enter site">
+      <span class="enter__brand">Mwemtsi Sunglasses</span>
+      <span class="enter__ring" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+      </span>
+      <span class="enter__hint">Click to enter</span>
+    </button>
+
+    <header class="hero" id="hero">
+      <p class="hero__eyebrow">New Season</p>
+      <h1 class="hero__title">See beyond<br />the <em>visible.</em></h1>
+      <p class="hero__sub">The best glasses in Dar es Salaam.</p>
+      <div>
+        <a class="btn" href="#services">Explore the Collection</a>
+      </div>
+    </header>
+
+    <div class="scroll-cue" aria-hidden="true">
+      <span class="scroll-cue__line"></span>
+      Scroll
+    </div>
+  </section>
+
+  <!-- ==================== SECOND ENTRANCE ==================== -->
+  <section class="intro" id="secondIntro">
+    <div class="stage" id="stage2">
+      <video
+        class="stage__media stage__video"
+        id="introVideo2"
+        src="Man_putting_on_sunglasses_20261020190403.mp4"
+        muted
+        loop
+        playsinline
+        preload="metadata"
+      ></video>
+      <img
+        class="stage__media stage__image"
+        src="Man_handing_sunglasses_2K_20261020185952.jpg"
+        alt="Man handing sunglasses"
+      />
+    </div>
+
+    <button class="enter" id="enter2" aria-label="Enter try on">
+      <span class="enter__brand">Try On</span>
+      <span class="enter__ring" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+      </span>
+      <span class="enter__hint">Click to try on</span>
+    </button>
+
+    <div class="scroll-cue" aria-hidden="true">
+      <span class="scroll-cue__line"></span>
+      Scroll
+    </div>
+  </section>
+
+  <!-- ==================== SERVICES / TRUST ==================== -->
+  <section class="services" id="services">
+    <video
+      class="services__bg"
+      src="Sunglasses_spinning_in_mid-air_20261020004516.mp4"
+      muted
+      loop
+      playsinline
+      preload="metadata"
+    ></video>
+
+    <div class="section">
+      <div class="services__head reveal">
+        <p class="kicker">Why Mwemtsi</p>
+        <h2 class="section__title">More than sunglasses — a standard we stand behind.</h2>
+        <p class="section__lede">
+          Great service is why people come back. Every pair we sell is backed by
+          real protection, honest advice and care that follows you long after checkout.
+        </p>
+      </div>
+
+      <div class="services__grid">
+        <article class="service reveal">
+          <span class="service__num">01</span>
+          <h3 class="service__title">100% UV400 Protection</h3>
+          <p class="service__text">Every lens blocks UVA and UVB — protecting your eyes under the Dar es Salaam sun, all day.</p>
+        </article>
+
+        <article class="service reveal">
+          <span class="service__num">02</span>
+          <h3 class="service__title">Free Delivery in Dar</h3>
+          <p class="service__text">Fast, free delivery across Dar es Salaam. Order today, wear them tomorrow.</p>
+        </article>
+
+        <article class="service reveal">
+          <span class="service__num">03</span>
+          <h3 class="service__title">Authentic Quality</h3>
+          <p class="service__text">Hand-selected frames and lenses. No fakes, no shortcuts — only pieces we would wear ourselves.</p>
+        </article>
+
+        <article class="service reveal">
+          <span class="service__num">04</span>
+          <h3 class="service__title">Personal Fitting</h3>
+          <p class="service__text">We help you find the shape that suits your face, so your glasses look as good as they feel.</p>
+        </article>
+
+        <article class="service reveal">
+          <span class="service__num">05</span>
+          <h3 class="service__title">Easy 7-Day Returns</h3>
+          <p class="service__text">Changed your mind? Return within 7 days for a full refund. No questions, no stress.</p>
+        </article>
+
+        <article class="service reveal">
+          <span class="service__num">06</span>
+          <h3 class="service__title">Lifetime Care</h3>
+          <p class="service__text">Free cleaning, tightening and adjustments in-store for as long as you wear them.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== SCROLL-DRIVEN VIDEO ==================== -->
+  <section class="scrub" id="scrub">
+    <div class="scrub__sticky">
+      <video
+        class="scrub__video"
+        id="scrubVideo"
+        src="Man_and_woman_standing_back_20261020002621.mp4"
+        muted
+        playsinline
+        preload="metadata"
+      ></video>
+
+      <div class="scrub__overlay" id="scrubOverlay">
+        <p class="scrub__kicker">For him. For her.</p>
+        <p class="scrub__line">Two stories,<br />one <em>standard.</em></p>
+      </div>
+
+      <div class="scrub__progress" aria-hidden="true"><span id="scrubBar"></span></div>
+    </div>
+  </section>
+
+  <!-- ==================== MEN / WOMEN ==================== -->
+  <section class="categories" id="categories">
+    <div class="categories__head reveal">
+      <p class="kicker">Choose Your Side</p>
+      <h2 class="section__title">Two collections. Two temperaments.</h2>
+      <p class="section__lede">Distinct styling for distinct tastes — find the one that speaks to you.</p>
+    </div>
+
+    <div class="cat-grid">
+      <a class="cat cat--men reveal" href="men.html">
+        <span class="cat__label">The Men's Edit</span>
+        <h3 class="cat__name">For Him</h3>
+        <p class="cat__line">Bold, structured frames built for sharp lines and long days under the sun.</p>
+        <span class="cat__cta">Shop Men &rarr;</span>
+      </a>
+
+      <a class="cat cat--women reveal" href="women.html">
+        <span class="cat__label">The Women's Edit</span>
+        <h3 class="cat__name">For Her</h3>
+        <p class="cat__line">Soft, sculpted silhouettes with a warm glow — elegance that never tries too hard.</p>
+        <span class="cat__cta">Shop Women &rarr;</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="footer" id="contact">
+    <div class="footer__brand">Mwemtsi</div>
+    <ul class="footer__links">
+      <li><a href="about.html#about">About</a></li>
+      <li><a href="about.html#contact">Contact</a></li>
+      <li><a href="about.html#delivery">Delivery</a></li>
+      <li><a href="about.html#returns">Returns</a></li>
+    </ul>
+    <span class="footer__copy">Dar es Salaam, Tanzania — © Mwemtsi Sunglasses</span>
+  </footer>
+
+  <button class="replay" id="replay">Replay Intro</button>
+
+  <script>
+    const body = document.body;
+    const root = document.documentElement;
+
+    const stage = document.getElementById("stage");
+    const introVideo = document.getElementById("introVideo");
+    const enter = document.getElementById("enter");
+    const stage2 = document.getElementById("stage2");
+    const introVideo2 = document.getElementById("introVideo2");
+    const enter2 = document.getElementById("enter2");
+    const replay = document.getElementById("replay");
+
+    const scrub = document.getElementById("scrub");
+    const scrubVideo = document.getElementById("scrubVideo");
+    const scrubOverlay = document.getElementById("scrubOverlay");
+    const scrubBar = document.getElementById("scrubBar");
+
+    const isCoarsePointer = window.matchMedia("(pointer: coarse)").matches;
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    let entered = false;
+    let entered2 = false;
+    let scrubDuration = 8;
+    let ticking = false;
+
+    function startIntro() {
+      if (entered) return;
+      entered = true;
+
+      enter.classList.add("is-hidden");
+      stage.classList.add("is-playing");
+
+      introVideo.currentTime = 0;
+      introVideo.play().catch(() => {});
+
+      setTimeout(() => {
+        body.classList.remove("locked");
+        body.classList.add("revealed");
+        replay.classList.add("is-visible");
+      }, 2000);
+    }
+
+    function replayIntro() {
+      body.classList.remove("revealed", "scrolled");
+      replay.classList.remove("is-visible");
+      stage.classList.remove("is-playing");
+      introVideo.pause();
+
+      root.style.scrollBehavior = "auto";
+      window.scrollTo(0, 0);
+      root.style.scrollBehavior = "";
+
+      body.classList.add("locked");
+
+      setTimeout(() => {
+        entered = false;
+        enter.classList.remove("is-hidden");
+      }, 900);
+    }
+
+    function startIntro2() {
+      if (entered2) return;
+      entered2 = true;
+
+      enter2.classList.add("is-hidden");
+      stage2.classList.add("is-playing");
+
+      introVideo2.currentTime = 0;
+      introVideo2.play().catch(() => {});
+    }
+
+    enter.addEventListener("click", startIntro);
+    enter2.addEventListener("click", startIntro2);
+    replay.addEventListener("click", replayIntro);
+
+    function onScroll() {
+      body.classList.toggle("scrolled", window.scrollY > window.innerHeight * 0.6);
+
+      if (scrub) {
+        const rect = scrub.getBoundingClientRect();
+        const total = scrub.offsetHeight - window.innerHeight;
+        const progress = total > 0 ? Math.min(1, Math.max(0, -rect.top / total)) : 0;
+
+        if (scrubBar) scrubBar.style.width = (progress * 100) + "%";
+        if (scrubOverlay) scrubOverlay.classList.toggle("is-in", progress > 0.12 && progress < 0.92);
+
+        const canScrub =
+          !prefersReducedMotion &&
+          !isCoarsePointer &&
+          scrubVideo &&
+          scrubDuration &&
+          scrubVideo.readyState >= 2;
+
+        if (canScrub) {
+          try { scrubVideo.currentTime = progress * scrubDuration; } catch (e) {}
+        }
+      }
+
+      ticking = false;
+    }
+
+    window.addEventListener("scroll", () => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(onScroll);
+      }
+    }, { passive: true });
+
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-in");
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.18 });
+
+    document.querySelectorAll(".reveal").forEach((el) => io.observe(el));
+
+    if (scrubVideo) {
+      scrubVideo.addEventListener("loadedmetadata", () => {
+        if (isFinite(scrubVideo.duration)) scrubDuration = scrubVideo.duration;
+      });
+      scrubVideo.addEventListener("loadeddata", () => {
+        scrubVideo.currentTime = 0.01;
+      }, { once: true });
+
+      if (isCoarsePointer && !prefersReducedMotion) {
+        scrubVideo.loop = true;
+        const mobileIO = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) scrubVideo.play().catch(() => {});
+            else scrubVideo.pause();
+          });
+        }, { threshold: 0.25 });
+        mobileIO.observe(scrub);
+      }
+    }
+
+    const servicesSection = document.getElementById("services");
+    const servicesBg = document.querySelector(".services__bg");
+    if (servicesBg && servicesSection && !prefersReducedMotion) {
+      const bgIO = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) servicesBg.play().catch(() => {});
+          else servicesBg.pause();
+        });
+      }, { threshold: 0.08 });
+      bgIO.observe(servicesSection);
+    }
+
+    onScroll();
+  </script>
+
+</body></html>

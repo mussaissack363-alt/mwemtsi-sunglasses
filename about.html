@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Mwemtsi Sunglasses — About, Contact, Delivery & Returns</title>
+<style>
+  :root {
+    --gold: #d4af6a;
+    --ink: #0a0a0a;
+    --ink-soft: #121212;
+    --paper: #f5f2ec;
+    --ease-cinema: cubic-bezier(0.77, 0, 0.175, 1);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--ink);
+    color: var(--paper);
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    overflow-x: hidden;
+  }
+
+  .nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.2rem clamp(1.5rem, 5vw, 4rem);
+    background: rgba(10,10,10,.82);
+    backdrop-filter: blur(10px);
+  }
+
+  .nav__logo {
+    font-size: 0.95rem;
+    letter-spacing: 0.5em;
+    text-indent: 0.5em;
+    font-weight: 300;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--paper);
+  }
+
+  .nav__links {
+    display: flex;
+    gap: 2.2rem;
+    list-style: none;
+  }
+
+  .nav__links a {
+    color: var(--paper);
+    text-decoration: none;
+    font-size: 0.88rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    font-weight: 300;
+    opacity: .8;
+    transition: opacity .3s, color .3s;
+  }
+
+  .nav__links a:hover,
+  .nav__links a.is-active { opacity: 1; color: var(--gold); }
+
+  .hero {
+    min-height: 52vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 8rem clamp(1.5rem, 5vw, 4rem) 4rem;
+    max-width: 1240px;
+    margin: 0 auto;
+  }
+
+  .kicker {
+    font-size: 0.82rem;
+    letter-spacing: 0.45em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 400;
+    margin-bottom: 1.1rem;
+  }
+
+  .hero__title {
+    font-family: Georgia, "Times New Roman", serif;
+    font-weight: 400;
+    font-size: clamp(2.4rem, 5.5vw, 4rem);
+    line-height: 1.1;
+    margin-bottom: 1.2rem;
+  }
+
+  .hero__title em { font-style: italic; color: var(--gold); }
+
+  .hero__sub {
+    font-size: 1.05rem;
+    font-weight: 300;
+    line-height: 1.7;
+    opacity: .8;
+    max-width: 560px;
+  }
+
+  .section {
+    padding: clamp(4rem, 8vw, 7rem) clamp(1.5rem, 5vw, 4rem);
+    max-width: 1240px;
+    margin: 0 auto;
+  }
+
+  .section + .section { border-top: 1px solid rgba(245,242,236,.12); }
+
+  .section__title {
+    font-family: Georgia, "Times New Roman", serif;
+    font-weight: 400;
+    font-size: clamp(1.8rem, 3.6vw, 2.8rem);
+    line-height: 1.15;
+    margin-bottom: 1.4rem;
+    max-width: 720px;
+  }
+
+  .prose {
+    font-size: 1.02rem;
+    font-weight: 300;
+    line-height: 1.8;
+    opacity: .78;
+    max-width: 640px;
+  }
+
+  .prose p + p { margin-top: 1.1rem; }
+
+  .prose strong { font-weight: 400; color: var(--paper); }
+
+  .facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1px;
+    margin-top: 2.5rem;
+    background: rgba(245,242,236,.14);
+    border: 1px solid rgba(245,242,236,.14);
+  }
+
+  .fact {
+    background: var(--ink);
+    padding: 1.8rem 1.6rem 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: .6rem;
+  }
+
+  .fact__num {
+    font-size: 0.72rem;
+    letter-spacing: 0.3em;
+    color: var(--gold);
+    font-weight: 400;
+  }
+
+  .fact__title {
+    font-family: Georgia, "Times New Roman", serif;
+    font-weight: 400;
+    font-size: 1.25rem;
+  }
+
+  .fact__text {
+    font-size: 0.93rem;
+    font-weight: 300;
+    line-height: 1.65;
+    opacity: .7;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.9rem;
+    margin-top: 2.2rem;
+    padding: 0.9rem 2rem;
+    border: 1px solid var(--paper);
+    background: transparent;
+    color: var(--paper);
+    text-decoration: none;
+    font-size: 0.85rem;
+    letter-spacing: 0.3em;
+    text-indent: 0.3em;
+    text-transform: uppercase;
+    font-weight: 400;
+    transition: background .35s, color .35s, border-color .35s;
+  }
+
+  .btn:hover {
+    background: var(--paper);
+    color: var(--ink);
+    border-color: var(--paper);
+  }
+
+  .footer {
+    border-top: 1px solid rgba(245,242,236,.14);
+    padding: clamp(3rem, 6vw, 5rem) clamp(1.5rem, 5vw, 4rem);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1240px;
+    margin: 0 auto;
+  }
+
+  .footer__brand {
+    font-size: 0.95rem;
+    letter-spacing: 0.5em;
+    text-indent: 0.5em;
+    text-transform: uppercase;
+    font-weight: 300;
+  }
+
+  .footer__links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+    flex-wrap: wrap;
+  }
+
+  .footer__links a {
+    color: var(--paper);
+    text-decoration: none;
+    font-size: 0.8rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    font-weight: 300;
+    opacity: .7;
+    transition: opacity .3s, color .3s;
+  }
+
+  .footer__links a:hover { opacity: 1; color: var(--gold); }
+
+  .footer__copy {
+    font-size: 0.78rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    opacity: .55;
+    font-weight: 300;
+  }
+
+  @media (max-width: 720px) {
+    .nav__links { display: none; }
+    .footer { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+  <nav class="nav">
+    <a href="index.html" class="nav__logo">Mwemtsi</a>
+    <ul class="nav__links">
+      <li><a href="about.html#about" class="is-active">About</a></li>
+      <li><a href="index.html#categories">Collection</a></li>
+      <li><a href="about.html#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <header class="hero">
+    <p class="kicker">About Mwemtsi</p>
+    <h1 class="hero__title">The best glasses in<br /><em>Dar es Salaam.</em></h1>
+    <p class="hero__sub">
+      Honest advice, authentic lenses and a standard we stand behind —
+      long after you leave the store.
+    </p>
+  </header>
+
+  <!-- ==================== ABOUT ==================== -->
+  <section class="section" id="about">
+    <p class="kicker">Who We Are</p>
+    <h2 class="section__title">A small store with a simple promise.</h2>
+    <div class="prose">
+      <p>
+        Mwemtsi Sunglasses is a Dar es Salaam eyewear store built around one idea:
+        every pair we sell is a pair we would wear ourselves.
+      </p>
+      <p>
+        We hand-select our frames and lenses, check every hinge and coating by hand,
+        and tell you honestly when a shape does not suit your face. No fakes,
+        no pressure, no shortcuts.
+      </p>
+    </div>
+
+    <div class="facts">
+      <div class="fact">
+        <span class="fact__num">01</span>
+        <h3 class="fact__title">100% UV400 Protection</h3>
+        <p class="fact__text">Every lens blocks UVA and UVB — protecting your eyes under the Dar es Salaam sun, all day.</p>
+      </div>
+      <div class="fact">
+        <span class="fact__num">02</span>
+        <h3 class="fact__title">Authentic Quality</h3>
+        <p class="fact__text">Hand-selected frames and lenses. No fakes, no shortcuts — only pieces we would wear ourselves.</p>
+      </div>
+      <div class="fact">
+        <span class="fact__num">03</span>
+        <h3 class="fact__title">Personal Fitting</h3>
+        <p class="fact__text">We help you find the shape that suits your face, so your glasses look as good as they feel.</p>
+      </div>
+      <div class="fact">
+        <span class="fact__num">04</span>
+        <h3 class="fact__title">Lifetime Care</h3>
+        <p class="fact__text">Free cleaning, tightening and adjustments in-store for as long as you wear them.</p>
+      </div>
+    </div>
+
+    <a class="btn" href="index.html#categories">View the Collection</a>
+  </section>
+
+  <!-- ==================== CONTACT ==================== -->
+  <!-- TODO: drop in the real phone / WhatsApp / Instagram details before going live. -->
+  <section class="section" id="contact">
+    <p class="kicker">Contact</p>
+    <h2 class="section__title">Visit us, or reserve a pair before you come.</h2>
+    <div class="prose">
+      <p><strong>Dar es Salaam, Tanzania</strong></p>
+      <p>
+        Walk in for a fitting, or message us ahead of time and we will set a pair aside.
+        Orders, questions about a frame, and fitting appointments are all handled
+        directly by the store.
+      </p>
+    </div>
+  </section>
+
+  <!-- ==================== DELIVERY ==================== -->
+  <section class="section" id="delivery">
+    <p class="kicker">Delivery</p>
+    <h2 class="section__title">Free delivery in Dar es Salaam.</h2>
+    <div class="prose">
+      <p>
+        Order today, wear them tomorrow. Delivery anywhere in Dar es Salaam is
+        <strong>free</strong>, and your pair is checked and packed before it leaves the store.
+      </p>
+      <p>
+        Outside Dar es Salaam, we ship across Tanzania — cost and timing are confirmed
+        with you before anything is sent, so there are no surprises.
+      </p>
+    </div>
+  </section>
+
+  <!-- ==================== RETURNS ==================== -->
+  <section class="section" id="returns">
+    <p class="kicker">Returns</p>
+    <h2 class="section__title">7 days to change your mind.</h2>
+    <div class="prose">
+      <p>
+        Changed your mind? Return your pair within <strong>7 days</strong> for a full refund.
+        No questions, no stress.
+      </p>
+      <p>
+        To be eligible, the glasses need to come back in their original packaging,
+        with the lenses and frames unworn and undamaged. If something is wrong with
+        your pair — a loose hinge, a scratched lens — bring it in and we will fix it,
+        not argue with you.
+      </p>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer__brand">Mwemtsi</div>
+    <ul class="footer__links">
+      <li><a href="about.html#about">About</a></li>
+      <li><a href="about.html#contact">Contact</a></li>
+      <li><a href="about.html#delivery">Delivery</a></li>
+      <li><a href="about.html#returns">Returns</a></li>
+    </ul>
+    <span class="footer__copy">Dar es Salaam, Tanzania — © Mwemtsi Sunglasses</span>
+  </footer>
+
+</body>
+</html>
