@@ -7,6 +7,7 @@
 <style>
   :root {
     --gold: #d4af6a;
+    --gold-deep: #7a5a14;
     --ink: #0a0a0a;
     --ink-soft: #121212;
     --paper: #f5f2ec;
@@ -85,7 +86,7 @@
     inset: 0;
     z-index: 3;
     background:
-      linear-gradient(to bottom, rgba(10,10,10,.45) 0%, transparent 30%, transparent 55%, rgba(10,10,10,.8) 100%);
+      linear-gradient(to bottom, rgba(10,10,10,.55) 0%, rgba(10,10,10,.12) 18%, transparent 32%, transparent 74%, rgba(10,10,10,.62) 100%);
     opacity: 0;
     transition: opacity 1.5s ease 1s;
     pointer-events: none;
@@ -139,6 +140,30 @@
     opacity: .85;
     text-shadow: 0 1px 12px rgba(0,0,0,.7);
     animation: breathe 2.6s ease-in-out infinite;
+  }
+
+  .enter__welcome {
+    font-family: Georgia, "Times New Roman", serif;
+    font-weight: 400;
+    font-size: clamp(1.25rem, 2.6vw, 1.95rem);
+    line-height: 1.2;
+    letter-spacing: 0.01em;
+    color: var(--paper);
+    text-align: center;
+    text-shadow: 0 2px 18px rgba(0,0,0,.75);
+    margin-bottom: 0.7rem;
+  }
+
+  .enter__tagline {
+    font-size: clamp(0.7rem, 1.1vw, 0.88rem);
+    letter-spacing: 0.38em;
+    text-indent: 0.38em;
+    text-transform: uppercase;
+    font-weight: 400;
+    color: var(--gold);
+    text-align: center;
+    text-shadow: 0 1px 12px rgba(0,0,0,.75);
+    margin-bottom: 1.8rem;
   }
 
   .enter__ring {
@@ -237,10 +262,26 @@
     justify-content: center;
     padding: 0 clamp(1.5rem, 5vw, 4rem);
     max-width: 1100px;
+    color: var(--ink);
     opacity: 0;
     transform: translateY(24px);
     pointer-events: none;
     transition: opacity 1s var(--ease-cinema), transform 1s var(--ease-cinema);
+  }
+
+  /* soft cream wash so the black + gold type reads over the man's background */
+  .hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: radial-gradient(74% 58% at 20% 54%,
+      rgba(245,242,236,.96) 0%,
+      rgba(245,242,236,.88) 32%,
+      rgba(245,242,236,.58) 56%,
+      rgba(245,242,236,.2) 74%,
+      rgba(245,242,236,0) 88%);
   }
 
   body.revealed .hero {
@@ -251,54 +292,57 @@
   }
 
   .hero__eyebrow {
-    font-size: 0.95rem;
+    font-size: clamp(1rem, 1.3vw, 1.35rem);
     letter-spacing: 0.45em;
     text-transform: uppercase;
-    color: var(--gold);
-    font-weight: 400;
-    margin-bottom: 1.2rem;
+    color: var(--gold-deep);
+    font-weight: 700;
+    margin-bottom: 1.4rem;
   }
 
   .hero__title {
     font-family: Georgia, "Times New Roman", serif;
     font-weight: 400;
-    font-size: clamp(2.6rem, 6vw, 4.6rem);
-    line-height: 1.08;
-    margin-bottom: 1.4rem;
+    font-size: clamp(3.1rem, 8vw, 6.6rem);
+    line-height: 1.02;
+    letter-spacing: -0.012em;
+    margin-bottom: 1.6rem;
+    color: var(--ink);
   }
 
-  .hero__title em { font-style: italic; color: var(--gold); }
+  .hero__title em { font-style: italic; color: var(--gold-deep); }
 
   .hero__sub {
-    font-size: 1.05rem;
-    font-weight: 300;
-    line-height: 1.7;
-    opacity: .85;
-    max-width: 440px;
-    margin-bottom: 2.2rem;
+    font-size: clamp(1.15rem, 1.6vw, 1.5rem);
+    font-weight: 400;
+    line-height: 1.6;
+    color: var(--ink);
+    opacity: .82;
+    max-width: 520px;
+    margin-bottom: 2.4rem;
   }
 
   .btn {
     display: inline-flex;
     align-items: center;
     gap: 0.9rem;
-    padding: 0.95rem 2.2rem;
-    border: 1px solid var(--paper);
-    background: var(--paper);
-    color: var(--ink);
+    padding: 1.05rem 2.5rem;
+    border: 1px solid var(--gold);
+    background: var(--ink);
+    color: var(--gold);
     text-decoration: none;
-    font-size: 0.88rem;
+    font-size: 0.95rem;
     letter-spacing: 0.3em;
     text-indent: 0.3em;
     text-transform: uppercase;
-    font-weight: 400;
+    font-weight: 500;
     cursor: pointer;
     transition: background .35s, color .35s, border-color .35s, transform .35s;
   }
 
   .btn:hover {
-    background: transparent;
-    color: var(--paper);
+    background: var(--gold);
+    color: var(--ink);
     border-color: var(--gold);
     transform: translateY(-2px);
   }
@@ -388,25 +432,33 @@
      ============================================================ */
   .services {
     position: relative;
-    overflow: hidden;
     background: var(--ink);
+  }
+
+  .services__bgwrap {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    height: 100svh;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
   }
 
   .services__bg {
     position: absolute;
     inset: 0;
-    z-index: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: center;
     opacity: .5;
   }
 
-  .services::after {
+  .services__bgwrap::after {
     content: "";
     position: absolute;
     inset: 0;
-    z-index: 1;
     background:
       radial-gradient(120% 90% at 80% 0%, rgba(212,175,106,.1), transparent 55%),
       linear-gradient(to bottom, rgba(10,10,10,.85) 0%, rgba(10,10,10,.55) 40%, rgba(10,10,10,.9) 100%);
@@ -741,8 +793,20 @@
     .nav__links { display: none; }
     .footer { flex-direction: column; align-items: flex-start; }
     .hero { max-width: 100%; }
-    .hero__title { font-size: clamp(2.2rem, 8vw, 3.4rem); }
+    .hero__title { font-size: clamp(2.8rem, 11vw, 4.2rem); }
+    .hero__sub { max-width: 100%; }
+    .btn { padding: .95rem 1.4rem; font-size: .85rem; letter-spacing: .24em; text-indent: .24em; }
     .enter__brand { font-size: 0.8rem; letter-spacing: 0.4em; }
+
+    /* let the "Why Mwemtsi" background video read through the stacked cards */
+    .services__bg { opacity: .68; }
+    .services__bgwrap::after {
+      background:
+        radial-gradient(120% 90% at 80% 0%, rgba(212,175,106,.12), transparent 55%),
+        linear-gradient(to bottom, rgba(10,10,10,.72) 0%, rgba(10,10,10,.42) 40%, rgba(10,10,10,.82) 100%);
+    }
+    .service { background: rgba(10,10,10,.44); }
+    .services__grid { gap: 8px; background: transparent; }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -769,7 +833,7 @@
       <video
         class="stage__media stage__video"
         id="introVideo"
-        src="Camera_zooms_into_sunglasses_20261019231724.mp4"
+        src="Man_putting_on_sunglasses_20261020190403.mp4"
         muted
         loop
         playsinline
@@ -777,13 +841,15 @@
       ></video>
       <img
         class="stage__media stage__image"
-        src="Man_wearing_sunglasses_2K_20261019231842.jpg"
-        alt="Man wearing Mwemtsi Sunglasses"
+        src="Man_handing_sunglasses_2K_20261020185952.jpg"
+        alt="Man handing Mwemtsi Sunglasses"
       />
     </div>
 
     <button class="enter" id="enter" aria-label="Enter site">
       <span class="enter__brand">Mwemtsi Sunglasses</span>
+      <span class="enter__welcome">Welcome to Mwemtsi Sunglasses</span>
+      <span class="enter__tagline">Where future meets vision</span>
       <span class="enter__ring" aria-hidden="true">
         <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
       </span>
@@ -811,7 +877,7 @@
       <video
         class="stage__media stage__video"
         id="introVideo2"
-        src="Man_putting_on_sunglasses_20261020190403.mp4"
+        src="Camera_zooms_into_sunglasses_20261019231724.mp4"
         muted
         loop
         playsinline
@@ -819,8 +885,8 @@
       ></video>
       <img
         class="stage__media stage__image"
-        src="Man_handing_sunglasses_2K_20261020185952.jpg"
-        alt="Man handing sunglasses"
+        src="Man_wearing_sunglasses_2K_20261019231842.jpg"
+        alt="Man wearing Mwemtsi Sunglasses"
       />
     </div>
 
@@ -840,14 +906,16 @@
 
   <!-- ==================== SERVICES / TRUST ==================== -->
   <section class="services" id="services">
-    <video
-      class="services__bg"
-      src="Sunglasses_spinning_in_mid-air_20261020004516.mp4"
-      muted
-      loop
-      playsinline
-      preload="metadata"
-    ></video>
+    <div class="services__bgwrap" aria-hidden="true">
+      <video
+        class="services__bg"
+        src="Sunglasses_spinning_in_mid-air_20261020004516.mp4"
+        muted
+        loop
+        playsinline
+        preload="metadata"
+      ></video>
+    </div>
 
     <div class="section">
       <div class="services__head reveal">
@@ -907,8 +975,9 @@
         id="scrubVideo"
         src="Man_and_woman_standing_back_20261020002621.mp4"
         muted
+        loop
         playsinline
-        preload="metadata"
+        preload="auto"
       ></video>
 
       <div class="scrub__overlay" id="scrubOverlay">
@@ -976,12 +1045,13 @@
     const scrubOverlay = document.getElementById("scrubOverlay");
     const scrubBar = document.getElementById("scrubBar");
 
-    const isCoarsePointer = window.matchMedia("(pointer: coarse)").matches;
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const isTouchDevice = window.matchMedia("(pointer: coarse)").matches;
 
     let entered = false;
     let entered2 = false;
     let scrubDuration = 8;
+    let scrubFallback = false;
     let ticking = false;
 
     function startIntro() {
@@ -1043,11 +1113,13 @@
         const progress = total > 0 ? Math.min(1, Math.max(0, -rect.top / total)) : 0;
 
         if (scrubBar) scrubBar.style.width = (progress * 100) + "%";
-        if (scrubOverlay) scrubOverlay.classList.toggle("is-in", progress > 0.12 && progress < 0.92);
+        if (scrubOverlay && !isTouchDevice) {
+          scrubOverlay.classList.toggle("is-in", progress > 0.12 && progress < 0.92);
+        }
 
         const canScrub =
           !prefersReducedMotion &&
-          !isCoarsePointer &&
+          scrubFallback &&
           scrubVideo &&
           scrubDuration &&
           scrubVideo.readyState >= 2;
@@ -1086,15 +1158,28 @@
         scrubVideo.currentTime = 0.01;
       }, { once: true });
 
-      if (isCoarsePointer && !prefersReducedMotion) {
+      if (!prefersReducedMotion) {
         scrubVideo.loop = true;
-        const mobileIO = new IntersectionObserver((entries) => {
+        const scrubIO = new IntersectionObserver((entries) => {
           entries.forEach((entry) => {
-            if (entry.isIntersecting) scrubVideo.play().catch(() => {});
-            else scrubVideo.pause();
+            if (entry.isIntersecting) {
+              if (isTouchDevice && scrubOverlay) scrubOverlay.classList.add("is-in");
+              const play = scrubVideo.play();
+              if (play && typeof play.catch === "function") {
+                play.catch(() => {
+                  scrubFallback = true;
+                  scrubVideo.currentTime = 0;
+                });
+              }
+            } else {
+              scrubVideo.pause();
+              if (isTouchDevice && scrubOverlay) scrubOverlay.classList.remove("is-in");
+            }
           });
-        }, { threshold: 0.25 });
-        mobileIO.observe(scrub);
+        }, { threshold: 0.2 });
+        scrubIO.observe(scrub);
+      } else if (isTouchDevice && scrubOverlay) {
+        scrubOverlay.classList.add("is-in");
       }
     }
 
