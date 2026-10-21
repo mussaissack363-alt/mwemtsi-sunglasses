@@ -88,7 +88,7 @@
     inset: 0;
     background:
       linear-gradient(to top, rgba(20,10,10,.92) 0%, rgba(40,18,18,.45) 55%, rgba(60,28,28,.15) 100%),
-      url("Woman_wearing_stylish_sunglasses_2K_20261020005135.jpg") center 25% / cover no-repeat;
+      var(--media-bg, url("Woman_wearing_stylish_sunglasses_2K_20261020005135.jpg")) center 25% / cover no-repeat;
     z-index: 0;
     transform: scale(1.02);
     will-change: transform;
@@ -493,7 +493,7 @@
     </ul>
   </nav>
 
-  <section class="hero">
+  <section class="hero" data-media-key="women-hero-image">
     <div class="hero__content">
       <p class="hero__label">The Women's Edit</p>
       <h1 class="hero__title">For Her</h1>
@@ -506,6 +506,7 @@
       <video
         class="story__video"
         id="storyVideo"
+        data-media-key="women-story-video"
         src="Woman_in_wind_20261020074041.mp4"
         muted
         playsinline
@@ -522,7 +523,7 @@
     <div class="products__head">
       <p class="kicker">Women's Collection</p>
       <h2 class="section__title">Grace in every detail.</h2>
-      <p class="section__lede">Designed to flatter and built to last. Tap any field below to edit names and prices in TZS. Upload your own product images — perfect for admin management.</p>
+      <p class="section__lede">Designed to flatter and built to last. Names, prices and photos are managed by the store owner and update automatically.</p>
     </div>
 
     <div class="products__grid" id="productsGrid"></div>
@@ -543,10 +544,11 @@
   
   
   
-</body>
-</html>
+  <script src="supabase-js.min.js"></script>
+  <script src="supabase-init.js"></script>
+  <script src="products-loader.js"></script>
+  <script src="media.js"></script>
   <script>
-
     const story = document.getElementById('story');
     const storyVideo = document.getElementById('storyVideo');
     const storyText = document.getElementById('storyText');
@@ -660,108 +662,18 @@
       img.src = p.image_url || 'Woman_wearing_stylish_sunglasses_2K_20261020005135.jpg';
       img.alt = p.name;
       
-      const upload = document.createElement('div');
-      upload.className = 'product-card__upload';
-      
-      const uploadLabel = document.createElement('label');
-      uploadLabel.className = 'product-card__upload-label';
-      uploadLabel.textContent = 'Change Image';
-      
-      const uploadInput = document.createElement('input');
-      uploadInput.type = 'file';
-      uploadInput.accept = 'image/*';
-      uploadInput.className = 'product-card__upload-input';
-      
-      uploadInput.addEventListener('change', async (e) => {
-        const file = e.target.files[0];
-        if (file && window.mwemtsiProducts && p.id) {
-          const reader = new FileReader();
-          reader.onload = async (ev) => {
-            const dataUrl = ev.target.result;
-            img.src = dataUrl;
-            await window.mwemtsiProducts.saveProduct({
-              id: p.id,
-              name: name.textContent.trim(),
-              price_tzs: parseFloat(price.textContent.replace(/[^0-9.]/g, '')) || 0,
-              image_url: dataUrl
-            });
-          };
-          reader.readAsDataURL(file);
-        }
-      });
-      
-      uploadLabel.appendChild(uploadInput);
-      const uploadNote = document.createElement('span');
-      uploadNote.className = 'product-card__upload-note';
-      uploadNote.textContent = 'Image upload (admin)';
-      
-      upload.appendChild(uploadLabel);
-      upload.appendChild(uploadNote);
-      
       media.appendChild(img);
-      media.appendChild(upload);
       
       const content = document.createElement('div');
       content.className = 'product-card__content';
       
       const name = document.createElement('h3');
       name.className = 'product-card__name';
-      name.contentEditable = true;
-      name.spellcheck = false;
       name.textContent = p.name || '';
-      name.setAttribute('aria-label', 'Product name (editable)');
       
       const price = document.createElement('div');
       price.className = 'product-card__price';
-      price.contentEditable = true;
-      price.spellcheck = false;
       price.textContent = formatTZS(p.price_tzs);
-      price.setAttribute('aria-label', 'Price in TZS (editable)');
-      
-      let saveTimeout;
-      async function saveChanges() {
-        if (window.mwemtsiProducts && p.id) {
-          const priceNum = parseFloat(price.textContent.replace(/[^0-9.]/g, '')) || 0;
-          await window.mwemtsiProducts.saveProduct({
-            id: p.id,
-            name: name.textContent.trim(),
-            price_tzs: priceNum,
-            image_url: img.src
-          });
-        }
-      }
-      
-      name.addEventListener('input', () => {
-        clearTimeout(saveTimeout);
-        saveTimeout = setTimeout(saveChanges, 500);
-      });
-      name.addEventListener('blur', saveChanges);
-      
-      price.addEventListener('input', () => {
-        const cursor = window.getSelection();
-        const pos = cursor.rangeCount > 0 ? cursor.getRangeAt(0).startOffset : 0;
-        const formatted = formatTZS(price.textContent);
-        price.textContent = formatted;
-        try {
-          const range = document.createRange();
-          const sel = window.getSelection();
-          range.setStart(price.childNodes[0] || price, Math.min(pos, formatted.length));
-          range.collapse(true);
-          sel.removeAllRanges();
-          sel.addRange(range);
-        } catch (e) {}
-        clearTimeout(saveTimeout);
-        saveTimeout = setTimeout(saveChanges, 500);
-      });
-      
-      price.addEventListener('blur', () => {
-        if (!price.textContent.trim()) {
-          price.textContent = 'TZS 0';
-        } else {
-          price.textContent = formatTZS(price.textContent);
-        }
-        saveChanges();
-      });
       
       const meta = document.createElement('div');
       meta.className = 'product-card__meta';

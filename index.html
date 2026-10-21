@@ -143,19 +143,46 @@
   }
 
   .enter__welcome {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+    margin-bottom: 0.9rem;
+  }
+
+  /* gold rule that draws the eye to the welcome line first */
+  .enter__welcome::before {
+    content: "";
+    width: 4.5rem;
+    height: 1px;
+    background: var(--gold);
+    margin-bottom: 0.7rem;
+    opacity: .9;
+  }
+
+  .enter__welcome-lead {
+    font-size: clamp(0.72rem, 1.15vw, 0.9rem);
+    letter-spacing: 0.42em;
+    text-indent: 0.42em;
+    text-transform: uppercase;
+    font-weight: 500;
+    color: var(--gold);
+    text-shadow: 0 1px 12px rgba(0,0,0,.75);
+  }
+
+  .enter__welcome-name {
     font-family: Georgia, "Times New Roman", serif;
     font-weight: 400;
-    font-size: clamp(1.25rem, 2.6vw, 1.95rem);
-    line-height: 1.2;
-    letter-spacing: 0.01em;
+    font-size: clamp(2.1rem, 5.2vw, 4rem);
+    line-height: 1.04;
+    letter-spacing: -0.005em;
     color: var(--paper);
     text-align: center;
-    text-shadow: 0 2px 18px rgba(0,0,0,.75);
-    margin-bottom: 0.7rem;
+    text-shadow: 0 3px 24px rgba(0,0,0,.8);
   }
 
   .enter__tagline {
-    font-size: clamp(0.7rem, 1.1vw, 0.88rem);
+    font-size: clamp(0.72rem, 1.1vw, 0.9rem);
     letter-spacing: 0.38em;
     text-indent: 0.38em;
     text-transform: uppercase;
@@ -833,6 +860,7 @@
       <video
         class="stage__media stage__video"
         id="introVideo"
+        data-media-key="intro-video"
         src="Man_putting_on_sunglasses_20261020190403.mp4"
         muted
         loop
@@ -841,6 +869,7 @@
       ></video>
       <img
         class="stage__media stage__image"
+        data-media-key="intro-image"
         src="Man_handing_sunglasses_2K_20261020185952.jpg"
         alt="Man handing Mwemtsi Sunglasses"
       />
@@ -848,7 +877,10 @@
 
     <button class="enter" id="enter" aria-label="Enter site">
       <span class="enter__brand">Mwemtsi Sunglasses</span>
-      <span class="enter__welcome">Welcome to Mwemtsi Sunglasses</span>
+      <span class="enter__welcome">
+        <span class="enter__welcome-lead">Welcome to</span>
+        <span class="enter__welcome-name">Mwemtsi Sunglasses</span>
+      </span>
       <span class="enter__tagline">Where future meets vision</span>
       <span class="enter__ring" aria-hidden="true">
         <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
@@ -877,6 +909,7 @@
       <video
         class="stage__media stage__video"
         id="introVideo2"
+        data-media-key="second-intro-video"
         src="Camera_zooms_into_sunglasses_20261019231724.mp4"
         muted
         loop
@@ -885,6 +918,7 @@
       ></video>
       <img
         class="stage__media stage__image"
+        data-media-key="second-intro-image"
         src="Man_wearing_sunglasses_2K_20261019231842.jpg"
         alt="Man wearing Mwemtsi Sunglasses"
       />
@@ -909,6 +943,7 @@
     <div class="services__bgwrap" aria-hidden="true">
       <video
         class="services__bg"
+        data-media-key="services-video"
         src="Sunglasses_spinning_in_mid-air_20261020004516.mp4"
         muted
         loop
@@ -973,6 +1008,7 @@
       <video
         class="scrub__video"
         id="scrubVideo"
+        data-media-key="scrub-video"
         src="Man_and_woman_standing_back_20261020002621.mp4"
         muted
         loop
@@ -1198,4 +1234,6 @@
     onScroll();
   </script>
 
+  <script src="supabase-js.min.js"></script>
+  <script src="media.js"></script>
 </body></html>

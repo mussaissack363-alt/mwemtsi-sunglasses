@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Mwemtsi Sunglasses — Admin</title>
+<style>
+  :root {
+    --gold: #d4af6a;
+    --gold-deep: #7a5a14;
+    --ink: #0a0a0a;
+    --ink-2: #121212;
+    --ink-3: #1b1b1b;
+    --paper: #f5f2ec;
+    --muted: #9a958c;
+    --line: rgba(245, 242, 236, .12);
+    --red: #e05252;
+    --green: #5fbf8a;
+    --ease: cubic-bezier(.77, 0, .175, 1);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--ink);
+    color: var(--paper);
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, h4 { font-family: Georgia, "Times New Roman", serif; font-weight: 400; line-height: 1.15; }
+  a { color: var(--gold); }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  button { cursor: pointer; }
+  [hidden] { display: none !important; }
+
+  .wrap { width: min(1180px, 100% - 2.5rem); margin: 0 auto; }
+
+  /* ---------- boot / login / denied ---------- */
+  .center {
+    min-height: 100svh;
+    display: grid;
+    place-items: center;
+    padding: 2rem 1.25rem;
+  }
+  .card {
+    width: min(430px, 100%);
+    background: var(--ink-2);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 2.2rem;
+  }
+  .card .eyebrow {
+    font-size: .68rem; letter-spacing: .38em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: .8rem; text-indent: .38em;
+  }
+  .card h1 { font-size: 2rem; margin-bottom: .4rem; }
+  .card p.lede { color: var(--muted); font-size: .9rem; margin-bottom: 1.6rem; }
+  .field { display: block; margin-bottom: 1rem; }
+  .field span {
+    display: block; font-size: .68rem; letter-spacing: .18em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: .45rem;
+  }
+  .field input, .field select, .field textarea {
+    width: 100%; background: var(--ink); border: 1px solid var(--line);
+    border-radius: 8px; padding: .75rem .9rem; outline: none;
+    transition: border-color .2s;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--gold); }
+  .field small { display: block; color: var(--muted); font-size: .75rem; margin-top: .35rem; }
+
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+    background: var(--gold); color: var(--ink); border: 1px solid var(--gold);
+    border-radius: 8px; padding: .72rem 1.15rem;
+    font-size: .7rem; font-weight: 700; letter-spacing: .18em; text-transform: uppercase;
+    text-indent: .18em; transition: background .2s, color .2s, opacity .2s;
+    white-space: nowrap;
+  }
+  .btn:hover { background: transparent; color: var(--gold); }
+  .btn:disabled { opacity: .5; cursor: not-allowed; }
+  .btn.wide { width: 100%; }
+  .btn.ghost { background: transparent; color: var(--paper); border-color: var(--line); }
+  .btn.ghost:hover { border-color: var(--gold); color: var(--gold); }
+  .btn.danger { background: transparent; color: var(--red); border-color: rgba(224,82,82,.4); }
+  .btn.danger:hover { background: rgba(224,82,82,.12); color: var(--red); }
+  .btn.small { padding: .5rem .8rem; font-size: .62rem; }
+
+  .msg {
+    border-radius: 8px; padding: .8rem .9rem; font-size: .85rem; margin-bottom: 1rem;
+    border: 1px solid var(--line); background: rgba(255,255,255,.03);
+  }
+  .msg.error { border-color: rgba(224,82,82,.45); color: #ffb4b4; background: rgba(224,82,82,.08); }
+  .msg.ok { border-color: rgba(95,191,138,.4); color: #a9e7c6; background: rgba(95,191,138,.08); }
+  .msg.warn { border-color: rgba(212,175,106,.45); color: #ecd6a6; background: rgba(212,175,106,.08); }
+
+  /* ---------- app shell ---------- */
+  .top {
+    position: sticky; top: 0; z-index: 40;
+    background: rgba(10,10,10,.92); backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .top__inner {
+    display: flex; align-items: center; gap: 1.5rem;
+    padding: .85rem 0; flex-wrap: wrap;
+  }
+  .brand { font-family: Georgia, serif; font-size: 1.05rem; letter-spacing: .02em; }
+  .brand span { color: var(--gold); }
+  .tabs { display: flex; gap: .25rem; margin-left: auto; flex-wrap: wrap; }
+  .tab {
+    background: none; border: 0; color: var(--muted);
+    font-size: .68rem; letter-spacing: .16em; text-transform: uppercase;
+    padding: .55rem .8rem; border-radius: 7px; text-indent: .16em;
+  }
+  .tab:hover { color: var(--paper); }
+  .tab.is-active { color: var(--ink); background: var(--gold); font-weight: 700; }
+  .who { display: flex; align-items: center; gap: .7rem; font-size: .75rem; color: var(--muted); }
+  .who b { color: var(--paper); font-weight: 500; }
+
+  main { padding: 2.2rem 0 5rem; }
+  .view { animation: fade .35s var(--ease) both; }
+  @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+  .page-head { margin-bottom: 1.6rem; }
+  .page-head h1 { font-size: clamp(1.8rem, 3.5vw, 2.6rem); }
+  .page-head p { color: var(--muted); font-size: .9rem; max-width: 65ch; margin-top: .35rem; }
+
+  /* ---------- dashboard ---------- */
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.6rem; }
+  .stat {
+    background: var(--ink-2); border: 1px solid var(--line);
+    border-radius: 12px; padding: 1.1rem 1.2rem;
+  }
+  .stat b { display: block; font-family: Georgia, serif; font-size: 2rem; line-height: 1; color: var(--gold); }
+  .stat span { font-size: .68rem; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+  .panel {
+    background: var(--ink-2); border: 1px solid var(--line);
+    border-radius: 12px; padding: 1.4rem; margin-bottom: 1.2rem;
+  }
+  .panel h2 { font-size: 1.35rem; margin-bottom: .3rem; }
+  .panel p { color: var(--muted); font-size: .88rem; }
+  .checklist { list-style: none; margin-top: 1rem; display: grid; gap: .55rem; }
+  .checklist li { display: flex; gap: .7rem; align-items: flex-start; font-size: .88rem; }
+  .checklist .dot {
+    width: 1.15rem; height: 1.15rem; border-radius: 50%; flex: none; margin-top: .18rem;
+    border: 1px solid var(--line); display: grid; place-items: center;
+    font-size: .65rem; color: var(--ink); background: transparent;
+  }
+  .checklist .dot.done { background: var(--green); border-color: var(--green); }
+  .checklist .dot.done::after { content: "✓"; font-size: .7rem; color: var(--ink); }
+
+  /* ---------- products ---------- */
+  .toolbar { display: flex; gap: .7rem; flex-wrap: wrap; align-items: center; margin-bottom: 1.2rem; }
+  .toolbar .spacer { flex: 1; }
+  .search {
+    background: var(--ink-2); border: 1px solid var(--line); border-radius: 8px;
+    padding: .6rem .8rem; min-width: 200px;
+  }
+  .new-form {
+    background: var(--ink-2); border: 1px solid var(--gold-deep); border-radius: 12px;
+    padding: 1.2rem; margin-bottom: 1.4rem;
+  }
+  .new-form h3 { font-size: 1.15rem; margin-bottom: .9rem; }
+  .grid-4 { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: .8rem; }
+  .prod-list { display: grid; gap: .9rem; }
+  .prod {
+    display: grid; grid-template-columns: 96px 1fr auto; gap: 1rem;
+    background: var(--ink-2); border: 1px solid var(--line);
+    border-radius: 12px; padding: .9rem;
+  }
+  .prod__img {
+    width: 96px; height: 96px; object-fit: cover; border-radius: 8px;
+    background: var(--ink-3); border: 1px solid var(--line);
+  }
+  .prod__fields { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: .65rem; align-content: start; }
+  .prod__fields label { display: block; }
+  .prod__fields label span {
+    display: block; font-size: .6rem; letter-spacing: .16em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: .28rem;
+  }
+  .prod__fields input, .prod__fields select {
+    width: 100%; background: var(--ink); border: 1px solid var(--line);
+    border-radius: 7px; padding: .55rem .65rem; outline: none;
+  }
+  .prod__fields input:focus, .prod__fields select:focus { border-color: var(--gold); }
+  .prod__fields .chk { display: flex; align-items: center; gap: .45rem; padding-top: 1.15rem; }
+  .prod__fields .chk input { width: auto; }
+  .prod__actions { display: flex; flex-direction: column; gap: .4rem; justify-content: center; }
+  .prod__actions label.btn { text-align: center; }
+  .prod__meta { grid-column: 1 / -1; display: flex; gap: .6rem; align-items: center; font-size: .72rem; color: var(--muted); }
+  .pill {
+    display: inline-block; font-size: .6rem; letter-spacing: .12em; text-transform: uppercase;
+    border: 1px solid var(--line); border-radius: 999px; padding: .15rem .55rem; color: var(--muted);
+  }
+  .pill.on { color: var(--green); border-color: rgba(95,191,138,.4); }
+  .pill.off { color: var(--red); border-color: rgba(224,82,82,.35); }
+  .empty { text-align: center; color: var(--muted); padding: 2.5rem 1rem; border: 1px dashed var(--line); border-radius: 12px; }
+
+  /* ---------- media ---------- */
+  .media-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+  .media-card {
+    background: var(--ink-2); border: 1px solid var(--line);
+    border-radius: 12px; overflow: hidden; display: flex; flex-direction: column;
+  }
+  .media-card__preview {
+    position: relative; aspect-ratio: 16 / 9; background: var(--ink-3); overflow: hidden;
+  }
+  .media-card__preview img, .media-card__preview video {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+  }
+  .media-card__badge {
+    position: absolute; top: .6rem; left: .6rem;
+    font-size: .58rem; letter-spacing: .12em; text-transform: uppercase;
+    padding: .2rem .55rem; border-radius: 999px; backdrop-filter: blur(6px);
+    background: rgba(10,10,10,.7); border: 1px solid var(--line); color: var(--muted);
+  }
+  .media-card__badge.live { color: var(--green); border-color: rgba(95,191,138,.45); }
+  .media-card__body { padding: 1rem; display: flex; flex-direction: column; gap: .7rem; flex: 1; }
+  .media-card__title { font-size: 1rem; }
+  .media-card__key { font-size: .68rem; color: var(--muted); font-family: ui-monospace, monospace; }
+  .media-card__actions { display: flex; gap: .5rem; margin-top: auto; flex-wrap: wrap; }
+  .media-card__note { font-size: .74rem; color: var(--muted); }
+  .media-card__note.error { color: #ffb4b4; }
+  .media-card__note.ok { color: #a9e7c6; }
+  .progress { height: 4px; border-radius: 999px; background: var(--ink-3); overflow: hidden; }
+  .progress i { display: block; height: 100%; width: 0; background: var(--gold); transition: width .2s; }
+
+  /* ---------- tutorial / faq ---------- */
+  .steps { display: grid; gap: .85rem; counter-reset: step; }
+  .step {
+    background: var(--ink-2); border: 1px solid var(--line);
+    border-radius: 12px; padding: 1.2rem 1.3rem; display: grid;
+    grid-template-columns: 2.2rem 1fr; gap: .4rem 1rem;
+  }
+  .step::before {
+    counter-increment: step; content: counter(step);
+    width: 2.2rem; height: 2.2rem; border-radius: 50%;
+    border: 1px solid var(--gold-deep); color: var(--gold);
+    display: grid; place-items: center; font-family: Georgia, serif; font-size: 1rem;
+    grid-row: 1 / span 2;
+  }
+  .step h3 { font-size: 1.08rem; margin-bottom: .2rem; }
+  .step p, .step li { color: var(--muted); font-size: .86rem; }
+  .step ul, .step ol { padding-left: 1.1rem; display: grid; gap: .25rem; }
+  .step code, .faq code, .panel code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: .8em; background: rgba(245,242,236,.07); border: 1px solid var(--line);
+    border-radius: 4px; padding: .08em .35em; color: #e8dcc0; word-break: break-word;
+  }
+  .step > div { min-width: 0; }
+  .step pre {
+    background: var(--ink); border: 1px solid var(--line); border-radius: 8px;
+    padding: .8rem .9rem; overflow-x: auto; margin-top: .5rem; max-width: 100%;
+  }
+  .step pre code { background: none; border: 0; padding: 0; font-size: .78rem; }
+  .faq { display: grid; gap: .55rem; }
+  .faq details {
+    background: var(--ink-2); border: 1px solid var(--line);
+    border-radius: 10px; padding: .1rem 1.1rem;
+  }
+  .faq summary {
+    cursor: pointer; list-style: none; padding: .95rem 0;
+    font-family: Georgia, serif; font-size: 1.02rem;
+    display: flex; justify-content: space-between; gap: 1rem; align-items: center;
+  }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary::after { content: "+"; color: var(--gold); font-size: 1.2rem; line-height: 1; }
+  .faq details[open] summary::after { content: "–"; }
+  .faq details > div { padding: 0 0 1rem; color: var(--muted); font-size: .86rem; }
+  .faq details > div p + p { margin-top: .6rem; }
+
+  /* ---------- toasts ---------- */
+  #toasts {
+    position: fixed; right: 1rem; bottom: 1rem; z-index: 100;
+    display: flex; flex-direction: column; gap: .5rem; max-width: min(360px, calc(100vw - 2rem));
+  }
+  .toast {
+    background: var(--ink-3); border: 1px solid var(--line); border-left: 3px solid var(--gold);
+    border-radius: 8px; padding: .75rem .9rem; font-size: .84rem;
+    box-shadow: 0 18px 40px rgba(0,0,0,.45);
+    animation: toastIn .3s var(--ease) both;
+  }
+  .toast.error { border-left-color: var(--red); }
+  .toast.ok { border-left-color: var(--green); }
+  @keyframes toastIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+  @media (max-width: 900px) {
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .prod { grid-template-columns: 80px 1fr; }
+    .prod__img { width: 80px; height: 80px; }
+    .prod__fields { grid-template-columns: 1fr 1fr; }
+    .prod__actions { grid-column: 1 / -1; flex-direction: row; }
+    .media-grid { grid-template-columns: 1fr; }
+    .grid-4 { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 560px) {
+    .top__inner { gap: .8rem; }
+    .tabs { order: 3; width: 100%; margin-left: 0; }
+    .who { margin-left: auto; }
+    .stats { grid-template-columns: 1fr 1fr; }
+    .prod { grid-template-columns: 1fr; }
+    .prod__img { width: 100%; height: 180px; }
+    .prod__fields { grid-template-columns: 1fr 1fr; }
+    .grid-4 { grid-template-columns: 1fr; }
+    .card { padding: 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ================= BOOT ================= -->
+<div class="center" id="boot">
+  <div class="card" style="text-align:center">
+    <p class="eyebrow">Mwemtsi</p>
+    <h1>Admin</h1>
+    <p class="lede" id="bootMsg">Checking your session…</p>
+  </div>
+</div>
+
+<!-- ================= LOGIN ================= -->
+<div class="center" id="login" hidden>
+  <form class="card" id="loginForm" autocomplete="on">
+    <p class="eyebrow">Mwemtsi</p>
+    <h1>Admin sign in</h1>
+    <p class="lede">Staff only. Use the email and password created in Supabase → Authentication → Users.</p>
+    <div class="msg error" id="loginError" hidden></div>
+    <label class="field">
+      <span>Email</span>
+      <input type="email" id="email" name="email" required autocomplete="username" placeholder="you@example.com" />
+    </label>
+    <label class="field">
+      <span>Password</span>
+      <input type="password" id="password" name="password" required autocomplete="current-password" placeholder="••••••••" />
+    </label>
+    <button class="btn wide" type="submit" id="loginBtn">Sign in</button>
+    <p style="font-size:.78rem;color:var(--muted);margin-top:1rem;text-align:center">
+      Forgot it? Reset the password in Supabase → Authentication → Users.
+    </p>
+  </form>
+</div>
+
+<!-- ================= DENIED ================= -->
+<div class="center" id="denied" hidden>
+  <div class="card" style="text-align:center">
+    <p class="eyebrow">Access</p>
+    <h1>Not an admin</h1>
+    <p class="lede" id="deniedMsg">This account is signed in but has no admin role.</p>
+    <p style="font-size:.84rem;color:var(--muted);margin-bottom:1.4rem">
+      Ask the owner to run:<br />
+      <code style="font-family:ui-monospace,monospace;font-size:.78rem">update public.profiles set role = 'admin' where email = '…';</code>
+    </p>
+    <button class="btn ghost" id="deniedOut">Sign out</button>
+  </div>
+</div>
+
+<!-- ================= SETUP ================= -->
+<div class="center" id="setup" hidden>
+  <div class="card">
+    <p class="eyebrow">Setup</p>
+    <h1>Database not ready</h1>
+    <p class="lede">The admin tables are missing or blocked. Run the site's <b>schema.sql</b> in Supabase → SQL Editor, then reload.</p>
+    <pre style="background:var(--ink);border:1px solid var(--line);border-radius:8px;padding:.8rem;overflow-x:auto;font-size:.72rem;color:var(--muted)" id="setupDetail"></pre>
+    <button class="btn wide" onclick="location.reload()" style="margin-top:1rem">Reload</button>
+    <button class="btn ghost wide" id="setupOut" style="margin-top:.5rem">Sign out</button>
+  </div>
+</div>
+
+<!-- ================= APP ================= -->
+<div id="app" hidden>
+  <header class="top">
+    <div class="wrap top__inner">
+      <div class="brand">Mwemtsi <span>Admin</span></div>
+      <nav class="tabs" id="tabs">
+        <button class="tab is-active" data-view="dashboard">Overview</button>
+        <button class="tab" data-view="products">Products</button>
+        <button class="tab" data-view="media">Media</button>
+        <button class="tab" data-view="tutorial">Tutorial</button>
+        <button class="tab" data-view="faq">FAQ</button>
+      </nav>
+      <div class="who"><b id="whoEmail"></b><button class="btn ghost small" id="signOut">Sign out</button></div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <!-- DASHBOARD -->
+    <section class="view" id="view-dashboard">
+      <div class="page-head">
+        <h1>Overview</h1>
+        <p>Everything on the public site is managed from here. Changes go live as soon as you save and the visitor reloads.</p>
+      </div>
+      <div class="stats">
+        <div class="stat"><b id="statProducts">—</b><span>Products</span></div>
+        <div class="stat"><b id="statActive">—</b><span>Active</span></div>
+        <div class="stat"><b id="statMedia">—</b><span>Media overrides</span></div>
+        <div class="stat"><b id="statCats">—</b><span>Categories</span></div>
+      </div>
+      <div class="panel">
+        <h2>Setup checklist</h2>
+        <p>Three things must be true before the public pages show your edits.</p>
+        <ul class="checklist" id="checklist">
+          <li><span class="dot" data-check="schema"></span><span><b>Database schema applied.</b> <code>schema.sql</code> has been run in Supabase.</span></li>
+          <li><span class="dot" data-check="admin"></span><span><b>Your account is an admin.</b> <code>profiles.role = 'admin'</code> for your email.</span></li>
+          <li><span class="dot" data-check="storage"></span><span><b>Storage bucket <code>media</code> exists</b> and is public for reading.</span></li>
+        </ul>
+      </div>
+      <div class="panel">
+        <h2>Quick actions</h2>
+        <p style="margin-bottom:1rem">Jump straight to the task you need.</p>
+        <div style="display:flex;gap:.6rem;flex-wrap:wrap">
+          <button class="btn small" data-goto="products">Manage products</button>
+          <button class="btn small" data-goto="media">Replace photos &amp; videos</button>
+          <button class="btn ghost small" data-goto="tutorial">Open the tutorial</button>
+          <a class="btn ghost small" href="index.html" target="_blank" rel="noopener">View public site</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRODUCTS -->
+    <section class="view" id="view-products" hidden>
+      <div class="page-head">
+        <h1>Products</h1>
+        <p>Edit a row and press Save. Prices are in TZS. Drag-free ordering: lower <b>Position</b> numbers appear first. Uncheck <b>Active</b> to hide a pair without deleting it.</p>
+      </div>
+      <div class="toolbar">
+        <input class="search" id="productSearch" type="search" placeholder="Search by name…" />
+        <select class="search" id="categoryFilter" style="min-width:150px">
+          <option value="">All categories</option>
+          <option value="men">Men</option>
+          <option value="women">Women</option>
+        </select>
+        <span class="spacer"></span>
+        <button class="btn" id="addProductBtn">+ Add product</button>
+        <button class="btn ghost" id="reloadProducts">Reload</button>
+      </div>
+
+      <div class="new-form" id="newProductForm" hidden>
+        <h3>New product</h3>
+        <div class="grid-4">
+          <label class="field" style="margin:0"><span>Name</span><input id="npName" placeholder="Mwemtsi Apex" /></label>
+          <label class="field" style="margin:0"><span>Price (TZS)</span><input id="npPrice" type="number" min="0" step="1000" placeholder="275000" /></label>
+          <label class="field" style="margin:0"><span>Category</span>
+            <select id="npCategory"><option value="men">Men</option><option value="women">Women</option></select>
+          </label>
+          <label class="field" style="margin:0"><span>Position</span><input id="npPosition" type="number" value="0" /></label>
+        </div>
+        <div style="display:flex;gap:.6rem;margin-top:.9rem">
+          <button class="btn" id="createProduct">Create</button>
+          <button class="btn ghost" id="cancelProduct">Cancel</button>
+        </div>
+      </div>
+
+      <div class="prod-list" id="productList"></div>
+    </section>
+
+    <!-- MEDIA -->
+    <section class="view" id="view-media" hidden>
+      <div class="page-head">
+        <h1>Photos &amp; videos</h1>
+        <p>Replace the media that ships with the site. Uploads are checked before they go live: the public pages only swap a file after it loads, and fall back to the original automatically if anything fails — so a bad upload never breaks the site.</p>
+      </div>
+      <div class="msg warn">
+        Keep replacements close to the originals: <b>MP4 (H.264)</b> for video, <b>JPG/WebP/PNG</b> for photos, 16:9 where the original is 16:9, and under the size limits shown on each card.
+      </div>
+      <div class="media-grid" id="mediaList"></div>
+      <div class="toolbar" style="margin-top:1.2rem">
+        <button class="btn ghost" id="reloadMedia">Reload from database</button>
+        <a class="btn ghost" href="index.html" target="_blank" rel="noopener">Open site to verify</a>
+      </div>
+    </section>
+
+    <!-- TUTORIAL -->
+    <section class="view" id="view-tutorial" hidden>
+      <div class="page-head">
+        <h1>Tutorial</h1>
+        <p>A short, practical guide to running the store. Read it once — it covers the few things that cause 90% of problems.</p>
+      </div>
+      <div class="steps">
+
+        <article class="step">
+          <h3>Create your admin account</h3>
+          <div>
+            <p>The admin page does not create accounts (that would let anyone in). Accounts are created by the owner:</p>
+            <ol>
+              <li>Supabase dashboard → <b>Authentication</b> → <b>Users</b> → <b>Add user</b>.</li>
+              <li>Enter an email and a strong password. Tick “auto confirm” if shown.</li>
+              <li>SQL Editor → run:</li>
+            </ol>
+            <pre><code>update public.profiles set role = 'admin' where email = 'you@example.com';</code></pre>
+            <p>Now sign in here with that email and password.</p>
+          </div>
+        </article>
+
+        <article class="step">
+          <h3>Add a product</h3>
+          <div>
+            <p>Products → <b>+ Add product</b>. Give it a name, a price in TZS, a category (Men/Women) and a position number.</p>
+            <ul>
+              <li>Lower position = earlier in the grid.</li>
+              <li>Leave <b>Active</b> ticked so it appears publicly.</li>
+              <li>You can add the photo now or later with “Change image”.</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="step">
+          <h3>Edit a product</h3>
+          <div>
+            <p>Change any field and press <b>Save</b> on that row. The price must be a number (no “TZS” needed — it is added automatically). If a save fails you will see the database error in the corner; the usual cause is an expired session — sign out and back in.</p>
+          </div>
+        </article>
+
+        <article class="step">
+          <h3>Upload product photos</h3>
+          <div>
+            <p>On a product row press <b>Change image</b>, pick a file, then <b>Save</b>.</p>
+            <ul>
+              <li>Best: JPG or WebP, at least 900×900, under 10 MB.</li>
+              <li>Square or portrait crops look best in the grid.</li>
+              <li>The old photo is not deleted from Storage; it simply stops being referenced.</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="step">
+          <h3>Replace a site photo or video</h3>
+          <div>
+            <p>Media tab → find the slot (for example “Home — intro video”) → <b>Choose file</b> → it uploads and goes live.</p>
+            <ul>
+              <li><b>Video:</b> MP4 (H.264) or WebM, ideally ≤ 20 MB. Muted, 720p is plenty for backgrounds. Shorter clips load faster.</li>
+              <li><b>Photo:</b> JPG/WebP/PNG ≤ 10 MB. Match the original shape (16:9 for full-screen backdrops).</li>
+              <li>Uploading can take a while on slow connections — wait for “Live” before checking the site.</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="step">
+          <h3>Why a bad upload cannot break the site</h3>
+          <div>
+            <p>Public pages never point straight at a new file. They preload it first, and only then swap it in. If the file is missing, the wrong type, too heavy or the network drops, the page silently keeps the bundled original. You may need a hard refresh (Ctrl/Cmd + Shift + R) to see a change because browsers cache video.</p>
+          </div>
+        </article>
+
+        <article class="step">
+          <h3>Undo a replacement</h3>
+          <div>
+            <p>Media tab → <b>Reset to default</b>. This removes the override row; the site returns to the media that shipped with it. The uploaded file stays in Storage and can be re-used.</p>
+          </div>
+        </article>
+
+        <article class="step">
+          <h3>Clean up duplicates</h3>
+          <div>
+            <p>If a product appears twice, keep the one with the correct photo and press <b>Delete</b> on the other. Deleting is permanent — prefer unticking <b>Active</b> if you might want it back.</p>
+          </div>
+        </article>
+
+        <article class="step">
+          <h3>Security rules that keep the store safe</h3>
+          <div>
+            <ul>
+              <li>Never put the Supabase <code>service_role</code> key in these files. Only the publishable (anon) key is public, and it can only read.</li>
+              <li>Customers can no longer edit prices or upload images: the database refuses writes unless the request carries an admin session.</li>
+              <li>This page being reachable is harmless — without an admin role it can read nothing and write nothing.</li>
+              <li>Remove a departing staff member in Authentication → Users. Their session dies immediately.</li>
+            </ul>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="view" id="view-faq" hidden>
+      <div class="page-head">
+        <h1>FAQ</h1>
+        <p>Answers to the questions that come up most often.</p>
+      </div>
+      <div class="faq">
+        <details>
+          <summary>I signed in but I only see “Not an admin”.</summary>
+          <div><p>Your account exists but its profile role is still <code>viewer</code>. The owner must run <code>update public.profiles set role = 'admin' where email = 'you@example.com';</code> in the SQL Editor, then you reload this page.</p></div>
+        </details>
+        <details>
+          <summary>“Invalid login credentials” — but the password is right.</summary>
+          <div><p>Either the email is unconfirmed, or the account was created with a different password. In Supabase → Authentication → Users, confirm the email or reset the password, then try again.</p></div>
+        </details>
+        <details>
+          <summary>I saved a product and the public page did not change.</summary>
+          <div><p>Hard-refresh the public page (Ctrl/Cmd + Shift + R). Check the product is <b>Active</b> and in the right category. If the row shows a red error, your session expired — sign out and in.</p></div>
+        </details>
+        <details>
+          <summary>I replaced a video and the old one is still playing.</summary>
+          <div><p>Videos are cached aggressively. Hard-refresh. Also confirm the Media card says <b>Live</b> and not just “Uploaded”. Very large files may take a moment to propagate.</p></div>
+        </details>
+        <details>
+          <summary>Which video format and size should I use?</summary>
+          <div><p>MP4 with H.264 video and AAC audio (or no audio) is the safest across phones and desktops. Aim for 720p, 10–20 MB, 10–20 seconds for background loops. A 60 MB 4K clip will work on fast Wi-Fi and struggle on mobile data.</p></div>
+        </details>
+        <details>
+          <summary>What is the maximum upload size?</summary>
+          <div><p>The page enforces 10 MB for images and 50 MB for video. Supabase also has a project-wide file limit. If a file is rejected, compress it (Handbrake for video, Squoosh for images) and try again.</p></div>
+        </details>
+        <details>
+          <summary>Can a customer edit prices or upload pictures now?</summary>
+          <div><p>No. The public product cards are read-only, and the database’s row-level security only allows writes from an authenticated admin. Hiding a button is not security; the policy is.</p></div>
+        </details>
+        <details>
+          <summary>Where are uploaded files stored?</summary>
+          <div><p>In the Supabase Storage bucket <code>media</code>. The database table <code>site_media</code> stores which file each slot should use. Product photos store their URL on the product row.</p></div>
+        </details>
+        <details>
+          <summary>How do I add a second admin?</summary>
+          <div><p>Create the account in Authentication → Users, then run <code>update public.profiles set role = 'admin' where email = '…';</code>. To demote someone, set the role back to <code>'viewer'</code>.</p></div>
+        </details>
+        <details>
+          <summary>What happens if I delete a category by mistake?</summary>
+          <div><p>Categories are fixed (<code>men</code>, <code>women</code>). Re-running <code>schema.sql</code> restores them. Products whose category disappears become uncategorised but are not deleted.</p></div>
+        </details>
+        <details>
+          <summary>Is it safe to share the code / GitHub repo?</summary>
+          <div><p>Yes. The repo contains only the publishable key, which can read public data. Writes require a signed-in admin, and the service_role key is never in the repo.</p></div>
+        </details>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div id="toasts"></div>
+
+<script src="supabase-js.min.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  var SUPABASE_URL = "https://bjjyotduxvcwcuaztxgj.supabase.co";
+  var SUPABASE_KEY = "sb_publishable_dVi5KufBJGYDM6slTAz0Hw_VN4XsRTq";
+  var LIMITS = { image: 10 * 1024 * 1024, video: 50 * 1024 * 1024 };
+  var IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/avif"];
+  var VIDEO_TYPES = ["video/mp4", "video/webm", "video/quicktime"];
+
+  var MEDIA_SLOTS = [
+    { key: "intro-video",       label: "Home — intro video",        kind: "video", fallback: "Man_putting_on_sunglasses_20261020190403.mp4", page: "index.html" },
+    { key: "intro-image",       label: "Home — intro photo",        kind: "image", fallback: "Man_handing_sunglasses_2K_20261020185952.jpg", page: "index.html" },
+    { key: "second-intro-video",label: "Try On — video",            kind: "video", fallback: "Camera_zooms_into_sunglasses_20261019231724.mp4", page: "index.html" },
+    { key: "second-intro-image",label: "Try On — photo",            kind: "image", fallback: "Man_wearing_sunglasses_2K_20261019231842.jpg", page: "index.html" },
+    { key: "services-video",    label: "Why Mwemtsi — background",  kind: "video", fallback: "Sunglasses_spinning_in_mid-air_20261020004516.mp4", page: "index.html" },
+    { key: "scrub-video",       label: "For him / For her — video", kind: "video", fallback: "Man_and_woman_standing_back_20261020002621.mp4", page: "index.html" },
+    { key: "men-hero-image",    label: "Men — hero background",     kind: "image", fallback: "Man_wearing_high-end_sunglasses_2K_20261020005015.jpg", page: "men.html" },
+    { key: "men-story-video",   label: "Men — story video",         kind: "video", fallback: "Man_hair_blowing_in_wind_20261020070525.mp4", page: "men.html" },
+    { key: "women-hero-image",  label: "Women — hero background",   kind: "image", fallback: "Woman_wearing_stylish_sunglasses_2K_20261020005135.jpg", page: "women.html" },
+    { key: "women-story-video", label: "Women — story video",       kind: "video", fallback: "Woman_in_wind_20261020074041.mp4", page: "women.html" }
+  ];
+
+  var $ = function (id) { return document.getElementById(id); };
+  var sb = null;
+  var me = null;
+  var isAdmin = false;
+  var products = [];
+  var mediaOverrides = {};
+  var pendingImages = {};
+
+  // ---------- helpers ----------
+  function toast(msg, kind) {
+    var box = $("toasts");
+    var el = document.createElement("div");
+    el.className = "toast" + (kind ? " " + kind : "");
+    el.textContent = msg;
+    box.appendChild(el);
+    setTimeout(function () {
+      el.style.opacity = "0";
+      el.style.transition = "opacity .3s";
+      setTimeout(function () { el.remove(); }, 320);
+    }, kind === "error" ? 7000 : 4200);
+  }
+
+  function fail(err, where) {
+    var msg = (err && (err.message || err.error_description || err.msg)) || String(err);
+    if (window.console) console.warn("[" + where + "]", err);
+    return msg;
+  }
+
+  function esc(v) {
+    return String(v == null ? "" : v)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+  }
+
+  function money(n) {
+    var num = Number(n) || 0;
+    return "TZS " + Math.round(num).toLocaleString("en-US");
+  }
+
+  function fileExt(name, fallback) {
+    var m = /\.([a-z0-9]+)$/i.exec(name || "");
+    return m ? m[1].toLowerCase() : fallback;
+  }
+
+  function show(el, yes) { if (el) el.hidden = !yes; }
+
+  function setView(name) {
+    Array.prototype.forEach.call(document.querySelectorAll(".view"), function (v) {
+      v.hidden = v.id !== "view-" + name;
+    });
+    Array.prototype.forEach.call(document.querySelectorAll(".tab"), function (t) {
+      t.classList.toggle("is-active", t.getAttribute("data-view") === name);
+    });
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    if (name === "products") loadProducts();
+    if (name === "media") loadMedia();
+    if (name === "dashboard") refreshDashboard();
+  }
+
+  // ---------- auth ----------
+  function initClient() {
+    if (window.supabase && typeof window.supabase.createClient === "function") {
+      sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+      return true;
+    }
+    return false;
+  }
+
+  async function checkAdmin() {
+    var res = await sb.rpc("is_admin");
+    if (!res.error) return !!res.data;
+    // RPC missing → schema not applied.
+    var code = res.error.code || "";
+    if (code === "PGRST202" || /could not find the function/i.test(res.error.message || "")) {
+      return { setup: true, detail: res.error.message };
+    }
+    // Any other failure: try the profile row directly.
+    var p = await sb.from("profiles").select("role").eq("id", me.id).maybeSingle();
+    if (p.error) return { setup: true, detail: p.error.message };
+    return !!(p.data && p.data.role === "admin");
+  }
+
+  async function enter(user) {
+    me = user;
+    show($("boot"), false);
+    show($("login"), false);
+    var admin = await checkAdmin();
+    if (admin && admin.setup) {
+      show($("setup"), true);
+      $("setupDetail").textContent = admin.detail || "";
+      return;
+    }
+    if (!admin) {
+      show($("denied"), true);
+      $("deniedMsg").textContent = "Signed in as " + (user.email || "this account") + ", which has no admin role.";
+      return;
+    }
+    isAdmin = true;
+    show($("denied"), false);
+    show($("setup"), false);
+    show($("app"), true);
+    $("whoEmail").textContent = user.email || "";
+    refreshDashboard();
+    loadProducts();
+    loadMedia();
+  }
+
+  function showLogin() {
+    show($("boot"), false);
+    show($("app"), false);
+    show($("denied"), false);
+    show($("setup"), false);
+    show($("login"), true);
+  }
+
+  async function boot() {
+    if (!initClient()) {
+      $("bootMsg").textContent = "Could not load supabase-js. Check that supabase-js.min.js is next to this file.";
+      return;
+    }
+    try {
+      var s = await sb.auth.getSession();
+      var session = s && s.data ? s.data.session : null;
+      if (session && session.user) await enter(session.user);
+      else showLogin();
+    } catch (e) {
+      $("bootMsg").textContent = "Startup error: " + fail(e, "boot");
+    }
+
+    sb.auth.onAuthStateChange(function (_event, session) {
+      if (session && session.user && !me) enter(session.user);
+    });
+  }
+
+  // ---------- dashboard ----------
+  async function refreshDashboard() {
+    $("statProducts").textContent = products.length ? products.length : "—";
+    $("statActive").textContent = products.length ? products.filter(function (p) { return p.active; }).length : "—";
+    $("statMedia").textContent = Object.keys(mediaOverrides).length;
+    $("statCats").textContent = products.length
+      ? (new Set(products.map(function (p) { return p.category; }).filter(Boolean))).size
+      : "—";
+
+    $("checklist").querySelectorAll(".dot").forEach(function (d) {
+      d.classList.toggle("done", d.getAttribute("data-check") !== "admin" || isAdmin);
+    });
+  }
+
+  // ---------- products ----------
+  async function loadProducts() {
+    if (!sb) return;
+    var res = await sb.from("products").select("*").order("category", { ascending: true }).order("position", { ascending: true });
+    if (res.error) {
+      toast("Could not load products: " + fail(res.error, "products"), "error");
+      return;
+    }
+    products = res.data || [];
+    renderProducts();
+    refreshDashboard();
+  }
+
+  function visibleProducts() {
+    var q = ($("productSearch").value || "").trim().toLowerCase();
+    var cat = $("categoryFilter").value;
+    return products.filter(function (p) {
+      if (cat && p.category !== cat) return false;
+      if (q && String(p.name || "").toLowerCase().indexOf(q) === -1) return false;
+      return true;
+    });
+  }
+
+  function renderProducts() {
+    var list = $("productList");
+    var rows = visibleProducts();
+    if (!rows.length) {
+      list.innerHTML = '<div class="empty">No products match. Add one above, or clear the filters.</div>';
+      return;
+    }
+    list.innerHTML = rows.map(function (p) {
+      var img = pendingImages[p.id] || p.image_url || "";
+      return '' +
+        '<article class="prod" data-id="' + esc(p.id) + '">' +
+          '<img class="prod__img" alt="" src="' + esc(img) + '" />' +
+          '<div>' +
+            '<div class="prod__fields">' +
+              '<label><span>Name</span><input data-field="name" value="' + esc(p.name) + '" /></label>' +
+              '<label><span>Price (TZS)</span><input data-field="price_tzs" type="number" min="0" step="1000" value="' + esc(Number(p.price_tzs) || 0) + '" /></label>' +
+              '<label><span>Position</span><input data-field="position" type="number" value="' + esc(p.position || 0) + '" /></label>' +
+              '<label><span>Category</span><select data-field="category">' +
+                '<option value="men"' + (p.category === "men" ? " selected" : "") + '>Men</option>' +
+                '<option value="women"' + (p.category === "women" ? " selected" : "") + '>Women</option>' +
+              '</select></label>' +
+            '</div>' +
+            '<div class="prod__meta">' +
+              '<span class="pill ' + (p.active ? "on" : "off") + '">' + (p.active ? "Active" : "Hidden") + '</span>' +
+              '<label style="display:flex;align-items:center;gap:.4rem;margin-left:.3rem"><input type="checkbox" data-field="active"' + (p.active ? " checked" : "") + ' /> Visible</label>' +
+              '<span style="opacity:.7">' + esc(money(p.price_tzs)) + '</span>' +
+            '</div>' +
+          '</div>' +
+          '<div class="prod__actions">' +
+            '<label class="btn ghost small">Image<input type="file" accept="image/*" data-action="image" hidden /></label>' +
+            '<button class="btn small" data-action="save">Save</button>' +
+            '<button class="btn danger small" data-action="delete">Delete</button>' +
+          '</div>' +
+        '</article>';
+    }).join("");
+  }
+
+  function rowData(card) {
+    var f = function (n) { return card.querySelector('[data-field="' + n + '"]'); };
+    return {
+      name: f("name").value.trim(),
+      price_tzs: Number(f("price_tzs").value) || 0,
+      position: parseInt(f("position").value, 10) || 0,
+      category: f("category").value,
+      active: f("active").checked
+    };
+  }
+
+  async function saveProduct(id, card) {
+    var d = rowData(card);
+    if (!d.name) { toast("A product needs a name.", "error"); return; }
+    if (d.price_tzs < 0) { toast("Price cannot be negative.", "error"); return; }
+    if (pendingImages[id]) d.image_url = pendingImages[id];
+    d.updated_at = new Date().toISOString();
+
+    var btn = card.querySelector('[data-action="save"]');
+    btn.disabled = true; btn.textContent = "Saving…";
+    var res = await sb.from("products").update(d).eq("id", id);
+    btn.disabled = false; btn.textContent = "Save";
+    if (res.error) { toast("Save failed: " + fail(res.error, "save"), "error"); return; }
+    delete pendingImages[id];
+    toast("Product saved.", "ok");
+    loadProducts();
+  }
+
+  async function uploadProductImage(id, file, card) {
+    if (!file) return;
+    if (IMAGE_TYPES.indexOf(file.type) === -1) { toast("Use a JPG, PNG, WebP or AVIF image.", "error"); return; }
+    if (file.size > LIMITS.image) { toast("Image is larger than 10 MB.", "error"); return; }
+    var path = "products/" + id + "-" + Date.now() + "." + fileExt(file.name, "jpg");
+    toast("Uploading image…");
+    var up = await sb.storage.from("media").upload(path, file, { cacheControl: "3600", upsert: false, contentType: file.type });
+    if (up.error) { toast("Upload failed: " + fail(up.error, "upload"), "error"); return; }
+    var pub = sb.storage.from("media").getPublicUrl(path);
+    var url = pub && pub.data ? pub.data.publicUrl : "";
+    pendingImages[id] = url;
+    var img = card.querySelector(".prod__img");
+    if (img) img.src = url;
+    toast("Image uploaded — press Save to apply.", "ok");
+  }
+
+  // ---------- media ----------
+  async function loadMedia() {
+    if (!sb) return;
+    mediaOverrides = {};
+    var res = await sb.from("site_media").select("key,url,kind,updated_at");
+    if (res.error) {
+      toast("Could not load media overrides: " + fail(res.error, "media"), "error");
+    } else {
+      (res.data || []).forEach(function (r) { mediaOverrides[r.key] = r; });
+    }
+    renderMedia();
+    refreshDashboard();
+  }
+
+  function renderMedia() {
+    var list = $("mediaList");
+    list.innerHTML = MEDIA_SLOTS.map(function (slot) {
+      var over = mediaOverrides[slot.key];
+      var src = over ? over.url : slot.fallback;
+      var preview = slot.kind === "video"
+        ? '<video src="' + esc(src) + '" muted loop playsinline preload="metadata" controls></video>'
+        : '<img src="' + esc(src) + '" alt="" />';
+      return '' +
+        '<article class="media-card" data-key="' + esc(slot.key) + '" data-kind="' + slot.kind + '">' +
+          '<div class="media-card__preview">' + preview +
+            '<span class="media-card__badge' + (over ? " live" : "") + '">' + (over ? "Live · custom" : "Default") + '</span>' +
+          '</div>' +
+          '<div class="media-card__body">' +
+            '<div>' +
+              '<h3 class="media-card__title">' + esc(slot.label) + '</h3>' +
+              '<div class="media-card__key">' + esc(slot.key) + ' · ' + esc(slot.page) + '</div>' +
+            '</div>' +
+            '<div class="progress" hidden><i></i></div>' +
+            '<div class="media-card__note"></div>' +
+            '<div class="media-card__actions">' +
+              '<label class="btn small">Choose ' + (slot.kind === "video" ? "video" : "photo") +
+                '<input type="file" data-action="upload" accept="' + (slot.kind === "video" ? "video/*" : "image/*") + '" hidden /></label>' +
+              '<button class="btn ghost small" data-action="reset"' + (over ? "" : " disabled") + '>Reset to default</button>' +
+            '</div>' +
+            '<div class="media-card__note">' + (slot.kind === "video" ? "MP4/WebM · max 50 MB" : "JPG/WebP/PNG · max 10 MB") + '</div>' +
+          '</div>' +
+        '</article>';
+    }).join("");
+  }
+
+  function mediaCard(key) {
+    return document.querySelector('.media-card[data-key="' + key + '"]');
+  }
+
+  function mediaNote(card, text, cls) {
+    var n = card.querySelector(".media-card__note");
+    n.textContent = text;
+    n.className = "media-card__note" + (cls ? " " + cls : "");
+  }
+
+  async function uploadMedia(card, file) {
+    var key = card.getAttribute("data-key");
+    var kind = card.getAttribute("data-kind");
+    var slot = MEDIA_SLOTS.find(function (s) { return s.key === key; });
+    if (!file) return;
+
+    if (kind === "video") {
+      if (VIDEO_TYPES.indexOf(file.type) === -1) { mediaNote(card, "That is not a supported video. Use MP4 or WebM.", "error"); return; }
+      if (file.size > LIMITS.video) { mediaNote(card, "Video is " + (file.size / 1048576).toFixed(1) + " MB — the limit is 50 MB.", "error"); return; }
+    } else {
+      if (IMAGE_TYPES.indexOf(file.type) === -1) { mediaNote(card, "That is not a supported image. Use JPG, PNG, WebP or AVIF.", "error"); return; }
+      if (file.size > LIMITS.image) { mediaNote(card, "Image is " + (file.size / 1048576).toFixed(1) + " MB — the limit is 10 MB.", "error"); return; }
+    }
+
+    var bar = card.querySelector(".progress");
+    var fill = card.querySelector(".progress i");
+    bar.hidden = false;
+    fill.style.width = "12%";
+    mediaNote(card, "Uploading…");
+
+    var path = "site/" + key + "-" + Date.now() + "." + fileExt(file.name, kind === "video" ? "mp4" : "jpg");
+    var up = await sb.storage.from("media").upload(path, file, {
+      cacheControl: "3600", upsert: false, contentType: file.type
+    });
+    if (up.error) {
+      bar.hidden = true;
+      mediaNote(card, "Upload failed: " + fail(up.error, "upload"), "error");
+      toast("Upload failed: " + fail(up.error, "upload"), "error");
+      return;
+    }
+    fill.style.width = "70%";
+
+    var pub = sb.storage.from("media").getPublicUrl(path);
+    var url = pub && pub.data ? pub.data.publicUrl : "";
+    var row = {
+      key: key,
+      url: url,
+      kind: kind,
+      label: slot ? slot.label : key,
+      updated_at: new Date().toISOString(),
+      updated_by: me ? me.id : null
+    };
+    var saved = await sb.from("site_media").upsert(row, { onConflict: "key" });
+    if (saved.error) {
+      bar.hidden = true;
+      mediaNote(card, "File uploaded but could not be activated: " + fail(saved.error, "site_media"), "error");
+      toast("Could not activate the new file: " + fail(saved.error, "site_media"), "error");
+      return;
+    }
+    fill.style.width = "100%";
+
+    var preview = card.querySelector(".media-card__preview");
+    preview.querySelector("img, video").outerHTML = kind === "video"
+      ? '<video src="' + esc(url) + '" muted loop playsinline preload="metadata" controls></video>'
+      : '<img src="' + esc(url) + '" alt="" />';
+    var badge = preview.querySelector(".media-card__badge");
+    badge.textContent = "Live · custom";
+    badge.classList.add("live");
+    card.querySelector('[data-action="reset"]').disabled = false;
+
+    mediaOverrides[key] = row;
+    setTimeout(function () { bar.hidden = true; fill.style.width = "0"; }, 900);
+    mediaNote(card, "Live. Reload the public page (hard refresh) to see it.", "ok");
+    toast("Replacement is live.", "ok");
+    refreshDashboard();
+  }
+
+  async function resetMedia(card) {
+    var key = card.getAttribute("data-key");
+    var slot = MEDIA_SLOTS.find(function (s) { return s.key === key; });
+    var res = await sb.from("site_media").delete().eq("key", key);
+    if (res.error) { mediaNote(card, "Reset failed: " + fail(res.error, "reset"), "error"); return; }
+    delete mediaOverrides[key];
+    var preview = card.querySelector(".media-card__preview");
+    preview.querySelector("img, video").outerHTML = slot.kind === "video"
+      ? '<video src="' + esc(slot.fallback) + '" muted loop playsinline preload="metadata" controls></video>'
+      : '<img src="' + esc(slot.fallback) + '" alt="" />';
+    var badge = preview.querySelector(".media-card__badge");
+    badge.textContent = "Default";
+    badge.classList.remove("live");
+    card.querySelector('[data-action="reset"]').disabled = true;
+    mediaNote(card, "Back to the bundled default.", "ok");
+    toast("Reset to default.", "ok");
+    refreshDashboard();
+  }
+
+  // ---------- wiring ----------
+  function wire() {
+    $("loginForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      var err = $("loginError");
+      err.hidden = true;
+      var btn = $("loginBtn");
+      btn.disabled = true; btn.textContent = "Signing in…";
+      var res = await sb.auth.signInWithPassword({
+        email: $("email").value.trim(),
+        password: $("password").value
+      });
+      btn.disabled = false; btn.textContent = "Sign in";
+      if (res.error) {
+        err.textContent = fail(res.error, "login");
+        err.hidden = false;
+        return;
+      }
+      if (res.data && res.data.user) enter(res.data.user);
+    });
+
+    async function signOut() {
+      try { await sb.auth.signOut(); } catch (e) {}
+      me = null; isAdmin = false;
+      show($("app"), false);
+      show($("denied"), false);
+      show($("setup"), false);
+      show($("login"), true);
+      $("password").value = "";
+    }
+    $("signOut").addEventListener("click", signOut);
+    $("deniedOut").addEventListener("click", signOut);
+    $("setupOut").addEventListener("click", signOut);
+
+    $("tabs").addEventListener("click", function (e) {
+      var b = e.target.closest(".tab");
+      if (b) setView(b.getAttribute("data-view"));
+    });
+    document.querySelectorAll("[data-goto]").forEach(function (b) {
+      b.addEventListener("click", function () { setView(b.getAttribute("data-goto")); });
+    });
+
+    $("productSearch").addEventListener("input", renderProducts);
+    $("categoryFilter").addEventListener("change", renderProducts);
+    $("reloadProducts").addEventListener("click", loadProducts);
+    $("reloadMedia").addEventListener("click", loadMedia);
+
+    $("addProductBtn").addEventListener("click", function () {
+      var f = $("newProductForm");
+      f.hidden = !f.hidden;
+      if (!f.hidden) $("npName").focus();
+    });
+    $("cancelProduct").addEventListener("click", function () {
+      $("newProductForm").hidden = true;
+    });
+    $("createProduct").addEventListener("click", async function () {
+      var name = $("npName").value.trim();
+      if (!name) { toast("Give the product a name.", "error"); return; }
+      var row = {
+        name: name,
+        price_tzs: Number($("npPrice").value) || 0,
+        category: $("npCategory").value,
+        position: parseInt($("npPosition").value, 10) || 0,
+        active: true,
+        image_url: ""
+      };
+      var res = await sb.from("products").insert(row);
+      if (res.error) { toast("Could not create: " + fail(res.error, "insert"), "error"); return; }
+      $("npName").value = ""; $("npPrice").value = ""; $("npPosition").value = "0";
+      $("newProductForm").hidden = true;
+      toast("Product created.", "ok");
+      loadProducts();
+    });
+
+    $("productList").addEventListener("click", async function (e) {
+      var card = e.target.closest(".prod");
+      if (!card) return;
+      var id = card.getAttribute("data-id");
+      var action = e.target.getAttribute("data-action");
+      if (!action) return;
+
+      if (action === "save") return saveProduct(id, card);
+
+      if (action === "delete") {
+        var p = products.find(function (x) { return x.id === id; });
+        if (!window.confirm('Delete "' + (p ? p.name : "this product") + '"? This cannot be undone.')) return;
+        var res = await sb.from("products").delete().eq("id", id);
+        if (res.error) { toast("Delete failed: " + fail(res.error, "delete"), "error"); return; }
+        toast("Product deleted.", "ok");
+        loadProducts();
+      }
+    });
+
+    $("productList").addEventListener("change", function (e) {
+      var input = e.target;
+      if (input.getAttribute("data-action") !== "image") return;
+      var card = input.closest(".prod");
+      var id = card.getAttribute("data-id");
+      var key = id.indexOf("default-") === 0 ? null : id;
+      if (!key) { toast("Save this product first, then change its image.", "error"); return; }
+      uploadProductImage(key, input.files && input.files[0], card);
+      input.value = "";
+    });
+
+    $("mediaList").addEventListener("click", function (e) {
+      var btn = e.target.closest('[data-action="reset"]');
+      if (!btn) return;
+      var card = btn.closest(".media-card");
+      if (window.confirm("Remove this override and go back to the original file?")) resetMedia(card);
+    });
+
+    $("mediaList").addEventListener("change", function (e) {
+      var input = e.target;
+      if (input.getAttribute("data-action") !== "upload") return;
+      var card = input.closest(".media-card");
+      uploadMedia(card, input.files && input.files[0]);
+      input.value = "";
+    });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", function () { wire(); boot(); });
+  } else {
+    wire(); boot();
+  }
+})();
+</script>
+</body>
+</html>
