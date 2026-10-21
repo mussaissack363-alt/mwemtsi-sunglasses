@@ -507,6 +507,7 @@
         class="story__video"
         id="storyVideo"
         data-media-key="women-story-video"
+        poster="Woman_in_wind_20261020074041_poster.jpg"
         src="Woman_in_wind_20261020074041.mp4"
         muted
         playsinline
@@ -661,6 +662,8 @@
       img.className = 'product-card__img';
       img.src = p.image_url || 'Woman_wearing_stylish_sunglasses_2K_20261020005135.jpg';
       img.alt = p.name;
+      img.loading = 'lazy';
+      img.decoding = 'async';
       
       media.appendChild(img);
       

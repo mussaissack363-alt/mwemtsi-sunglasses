@@ -499,6 +499,7 @@
         class="story__video"
         id="storyVideo"
         data-media-key="men-story-video"
+        poster="Man_hair_blowing_in_wind_20261020070525_poster.jpg"
         src="Man_hair_blowing_in_wind_20261020070525.mp4"
         muted
         playsinline
@@ -654,6 +655,8 @@
       img.className = 'product-card__img';
       img.src = p.image_url || 'Man_wearing_high-end_sunglasses_2K_20261020005015.jpg';
       img.alt = p.name;
+      img.loading = 'lazy';
+      img.decoding = 'async';
       
       media.appendChild(img);
       
