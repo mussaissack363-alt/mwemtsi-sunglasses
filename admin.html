@@ -95,6 +95,16 @@
   .msg.ok { border-color: rgba(95,191,138,.4); color: #a9e7c6; background: rgba(95,191,138,.08); }
   .msg.warn { border-color: rgba(212,175,106,.45); color: #ecd6a6; background: rgba(212,175,106,.08); }
 
+  .account-note {
+    font-size: .78rem; color: var(--muted); margin-top: 1rem; text-align: center;
+  }
+  .account-note b { color: var(--paper); font-weight: 500; }
+  .linkbtn {
+    background: none; border: 0; padding: 0; margin-left: .2rem;
+    color: var(--gold); font-size: inherit; text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
   /* ---------- app shell ---------- */
   .top {
     position: sticky; top: 0; z-index: 40;
@@ -323,19 +333,20 @@
   <form class="card" id="loginForm" autocomplete="on">
     <p class="eyebrow">Mwemtsi</p>
     <h1>Admin sign in</h1>
-    <p class="lede">Staff only. Use the email and password created in Supabase → Authentication → Users.</p>
+    <p class="lede">Staff only. Enter the admin password.</p>
     <div class="msg error" id="loginError" hidden></div>
-    <label class="field">
+    <label class="field" id="emailField" hidden>
       <span>Email</span>
-      <input type="email" id="email" name="email" required autocomplete="username" placeholder="you@example.com" />
+      <input type="email" id="email" name="email" autocomplete="username" placeholder="you@example.com" />
     </label>
     <label class="field">
       <span>Password</span>
       <input type="password" id="password" name="password" required autocomplete="current-password" placeholder="••••••••" />
     </label>
-    <button class="btn wide" type="submit" id="loginBtn">Sign in</button>
-    <p style="font-size:.78rem;color:var(--muted);margin-top:1rem;text-align:center">
-      Forgot it? Reset the password in Supabase → Authentication → Users.
+    <button class="btn wide" type="submit" id="loginBtn">Enter</button>
+    <p class="account-note">
+      Signing in as <b id="accountEmail">…</b>
+      <button type="button" class="linkbtn" id="toggleEmail">use another account</button>
     </p>
   </form>
 </div>
@@ -483,11 +494,11 @@
             <p>The admin page does not create accounts (that would let anyone in). Accounts are created by the owner:</p>
             <ol>
               <li>Supabase dashboard → <b>Authentication</b> → <b>Users</b> → <b>Add user</b>.</li>
-              <li>Enter an email and a strong password. Tick “auto confirm” if shown.</li>
+              <li>Use the login address <code>admin@mwemtsi.co.tz</code> (shown under the password box — tap “use another account” to sign in with a different one) and choose a strong password. Tick “auto confirm” if shown.</li>
               <li>SQL Editor → run:</li>
             </ol>
-            <pre><code>update public.profiles set role = 'admin' where email = 'you@example.com';</code></pre>
-            <p>Now sign in here with that email and password.</p>
+            <pre><code>update public.profiles set role = 'admin' where email = 'admin@mwemtsi.co.tz';</code></pre>
+            <p>Now come back here and enter only that password.</p>
           </div>
         </article>
 
@@ -635,6 +646,9 @@
 
   var SUPABASE_URL = "https://bjjyotduxvcwcuaztxgj.supabase.co";
   var SUPABASE_KEY = "sb_publishable_dVi5KufBJGYDM6slTAz0Hw_VN4XsRTq";
+  // The account behind the password-only login. Create this user in
+  // Supabase → Authentication → Users (or use "use another account").
+  var ADMIN_EMAIL = "admin@mwemtsi.co.tz";
   var LIMITS = { image: 10 * 1024 * 1024, video: 50 * 1024 * 1024 };
   var IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/avif"];
   var VIDEO_TYPES = ["video/mp4", "video/webm", "video/quicktime"];
@@ -1047,17 +1061,30 @@
 
   // ---------- wiring ----------
   function wire() {
+    $("email").value = ADMIN_EMAIL;
+    $("accountEmail").textContent = ADMIN_EMAIL;
+
+    $("toggleEmail").addEventListener("click", function () {
+      var f = $("emailField");
+      var showing = !f.hidden;
+      f.hidden = showing;
+      this.textContent = showing ? "use another account" : "hide email";
+      $("accountEmail").textContent = showing ? ADMIN_EMAIL : ($("email").value.trim() || ADMIN_EMAIL);
+      if (!showing) $("email").focus();
+    });
+
     $("loginForm").addEventListener("submit", async function (e) {
       e.preventDefault();
       var err = $("loginError");
       err.hidden = true;
+      var email = $("email").value.trim() || ADMIN_EMAIL;
       var btn = $("loginBtn");
       btn.disabled = true; btn.textContent = "Signing in…";
       var res = await sb.auth.signInWithPassword({
-        email: $("email").value.trim(),
+        email: email,
         password: $("password").value
       });
-      btn.disabled = false; btn.textContent = "Sign in";
+      btn.disabled = false; btn.textContent = "Enter";
       if (res.error) {
         err.textContent = fail(res.error, "login");
         err.hidden = false;
