@@ -641,6 +641,8 @@
     }
 
     const productsGrid = document.getElementById('productsGrid');
+    // Bundled with the site, used whenever a product picture is missing.
+    const FALLBACK_IMAGE = 'Woman_wearing_stylish_sunglasses_2K_20261020005135.jpg';
     const category = 'women';
     
     function formatTZS(val) {
@@ -660,10 +662,16 @@
       
       const img = document.createElement('img');
       img.className = 'product-card__img';
-      img.src = p.image_url || 'Woman_wearing_stylish_sunglasses_2K_20261020005135.jpg';
       img.alt = p.name;
       img.loading = 'lazy';
       img.decoding = 'async';
+      // A missing or broken picture must not leave a torn hole in the grid.
+      img.onerror = function () {
+        if (img.src.indexOf(FALLBACK_IMAGE) !== -1) return;
+        img.onerror = null;
+        img.src = FALLBACK_IMAGE;
+      };
+      img.src = p.image_url || FALLBACK_IMAGE;
       
       media.appendChild(img);
       

@@ -199,6 +199,10 @@
   .prod__actions { display: flex; flex-direction: column; gap: .4rem; justify-content: center; }
   .prod__actions label.btn { text-align: center; }
   .prod__meta { grid-column: 1 / -1; display: flex; gap: .6rem; align-items: center; font-size: .72rem; color: var(--muted); }
+  .prod__note { grid-column: 1 / -1; font-size: .72rem; color: var(--muted); white-space: pre-line; }
+  .prod__note.error { color: #ffb4b4; }
+  .prod__note.warn { color: #ecd6a6; }
+  .prod__note.ok { color: #a9e7c6; }
   .pill {
     display: inline-block; font-size: .6rem; letter-spacing: .12em; text-transform: uppercase;
     border: 1px solid var(--line); border-radius: 999px; padding: .15rem .55rem; color: var(--muted);
@@ -230,9 +234,24 @@
   .media-card__title { font-size: 1rem; }
   .media-card__key { font-size: .68rem; color: var(--muted); font-family: ui-monospace, monospace; }
   .media-card__actions { display: flex; gap: .5rem; margin-top: auto; flex-wrap: wrap; }
-  .media-card__note { font-size: .74rem; color: var(--muted); }
+  .media-card__note { font-size: .74rem; color: var(--muted); white-space: pre-line; }
   .media-card__note.error { color: #ffb4b4; }
   .media-card__note.ok { color: #a9e7c6; }
+  .media-card__note.warn { color: #ecd6a6; }
+  .media-card__rules {
+    list-style: none; margin: 0; padding: .6rem .75rem;
+    border: 1px solid var(--line); border-radius: 9px;
+    background: rgba(245,242,236,.025);
+    font-size: .71rem; line-height: 1.6; color: var(--muted);
+  }
+  .media-card__rules li { display: flex; gap: .5rem; }
+  .media-card__rules li::before { content: ""; flex: 0 0 4px; height: 4px; border-radius: 50%; background: var(--gold); margin-top: .55em; }
+  .media-card__rules b { color: var(--paper); font-weight: 600; }
+  .rules-toggle {
+    background: none; border: 0; color: var(--gold); font-size: .72rem;
+    padding: 0; text-decoration: underline; text-underline-offset: 2px;
+  }
+  .rules-toggle:hover { color: var(--paper); }
   .progress { height: 4px; border-radius: 999px; background: var(--ink-3); overflow: hidden; }
   .progress i { display: block; height: 100%; width: 0; background: var(--gold); transition: width .2s; }
 
@@ -491,7 +510,7 @@
         <article class="step">
           <h3>Create your admin account</h3>
           <div>
-            <p>The admin page does not create accounts (that would let anyone in). Accounts are created by the owner:</p>
+            <p>The admin page does not create accounts (that would let anyone in). An account for <code>admin@mwemtsi.co.tz</code> already exists. To add another one, the owner does this:</p>
             <ol>
               <li>Supabase dashboard → <b>Authentication</b> → <b>Users</b> → <b>Add user</b>.</li>
               <li>Use the login address <code>admin@mwemtsi.co.tz</code> (shown under the password box — tap “use another account” to sign in with a different one) and choose a strong password. Tick “auto confirm” if shown.</li>
@@ -524,10 +543,11 @@
         <article class="step">
           <h3>Upload product photos</h3>
           <div>
-            <p>On a product row press <b>Change image</b>, pick a file, then <b>Save</b>.</p>
+            <p>On a product row press <b>Change image</b>, pick a file, then <b>Save</b>. The file is checked before it uploads — if it does not meet the rules the upload is refused and the reason is printed under the row.</p>
             <ul>
-              <li>Best: JPG or WebP, at least 900×900, under 10 MB.</li>
-              <li>Square or portrait crops look best in the grid.</li>
+              <li>JPG, PNG, WebP or AVIF. Under 5 MB.</li>
+              <li>At least 800×800 and up to 3000×3000 pixels.</li>
+              <li>Between 1:2 and 2:1. A 4:5 picture fills the card best.</li>
               <li>The old photo is not deleted from Storage; it simply stops being referenced.</li>
             </ul>
           </div>
@@ -536,19 +556,40 @@
         <article class="step">
           <h3>Replace a site photo or video</h3>
           <div>
-            <p>Media tab → find the slot (for example “Home — intro video”) → <b>Choose file</b> → it uploads and goes live.</p>
+            <p>Media tab → find the slot (for example “Home — intro video”) → <b>Choose file</b> → it uploads and goes live. Each card prints the exact requirements for that slot, so you can check a file before you pick it.</p>
             <ul>
-              <li><b>Video:</b> MP4 (H.264) or WebM, ideally ≤ 20 MB. Muted, 720p is plenty for backgrounds. Shorter clips load faster.</li>
-              <li><b>Photo:</b> JPG/WebP/PNG ≤ 10 MB. Match the original shape (16:9 for full-screen backdrops).</li>
+              <li><b>Video:</b> MP4 (H.264) or WebM. At least 1280×720, up to 1920×1080, 16:9. Between 3 and 20 seconds, under 20 MB.</li>
+              <li><b>Photo:</b> JPG, PNG, WebP or AVIF. At least 1280×720, up to 3840×2160, 16:9. Under 5 MB.</li>
+              <li>A poster frame is captured from a video automatically, so the slot never shows the previous shot.</li>
               <li>Uploading can take a while on slow connections — wait for “Live” before checking the site.</li>
             </ul>
           </div>
         </article>
 
         <article class="step">
+          <h3>Why a file gets refused</h3>
+          <div>
+            <p>Every upload is inspected in your browser before anything is sent. A file is refused when it would visibly clash with the page:</p>
+            <ul>
+              <li>the wrong shape — a portrait photo in a slot that is cropped to 16:9 would cut the subject off;</li>
+              <li>too small — it would look blurry on a phone;</li>
+              <li>too big — a heavy file makes the page slow on mobile data;</li>
+              <li>the wrong codec — an HEVC or AV1 MP4 plays as a black box on some browsers.</li>
+            </ul>
+            <p>Amber messages are only advice: the upload still goes ahead, but the picture will not fill the frame quite as well.</p>
+          </div>
+        </article>
+
+        <article class="step">
           <h3>Why a bad upload cannot break the site</h3>
           <div>
-            <p>Public pages never point straight at a new file. They preload it first, and only then swap it in. If the file is missing, the wrong type, too heavy or the network drops, the page silently keeps the bundled original. You may need a hard refresh (Ctrl/Cmd + Shift + R) to see a change because browsers cache video.</p>
+            <p>There are three layers of protection, and a file has to get past all of them.</p>
+            <ol>
+              <li><b>Before upload.</b> The file is measured and decoded in your browser. A file that would clash with the page is refused, so it never reaches Storage.</li>
+              <li><b>On the public page.</b> Public pages never point straight at a new file. They preload it first, and only then swap it in. If the file is missing, the wrong type, too heavy or the network drops, the page silently keeps the bundled original.</li>
+              <li><b>In the database.</b> Only a signed-in admin can write a product or a media override. A stranger with the public key can read the catalogue but cannot change it.</li>
+            </ol>
+            <p>You may need a hard refresh (Ctrl/Cmd + Shift + R) to see a change because browsers cache video.</p>
           </div>
         </article>
 
@@ -640,8 +681,9 @@
 <div id="toasts"></div>
 
 <script src="supabase-js.min.js"></script>
+<script src="media-rules.js"></script>
 <script>
-(function () {
+  (function () {
   "use strict";
 
   var SUPABASE_URL = "https://bjjyotduxvcwcuaztxgj.supabase.co";
@@ -649,9 +691,8 @@
   // The account behind the password-only login. Create this user in
   // Supabase → Authentication → Users (or use "use another account").
   var ADMIN_EMAIL = "admin@mwemtsi.co.tz";
-  var LIMITS = { image: 10 * 1024 * 1024, video: 50 * 1024 * 1024 };
-  var IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/avif"];
-  var VIDEO_TYPES = ["video/mp4", "video/webm", "video/quicktime"];
+  // Accepted formats and size limits live in media-rules.js so the admin
+  // panel, the storage bucket and the public site cannot drift apart.
 
   var MEDIA_SLOTS = [
     { key: "intro-video",       label: "Home — intro video",        kind: "video", fallback: "Man_putting_on_sunglasses_20261020190403.mp4", page: "index.html" },
@@ -673,6 +714,10 @@
   var products = [];
   var mediaOverrides = {};
   var pendingImages = {};
+  // Edits that have been typed but not saved yet. The list is re-rendered
+  // after a save, so without this the admin would lose their work on
+  // every other row.
+  var dirty = {};
 
   // ---------- helpers ----------
   function toast(msg, kind) {
@@ -845,25 +890,32 @@
       return;
     }
     list.innerHTML = rows.map(function (p) {
+      var d = dirty[p.id] || {};
       var img = pendingImages[p.id] || p.image_url || "";
+      var nameVal = d.name != null ? d.name : (p.name || "");
+      var priceVal = d.price_tzs != null ? d.price_tzs : (Number(p.price_tzs) || 0);
+      var posVal = d.position != null ? d.position : (p.position || 0);
+      var catVal = d.category || p.category;
+      var actVal = d.active != null ? d.active : p.active;
       return '' +
         '<article class="prod" data-id="' + esc(p.id) + '">' +
           '<img class="prod__img" alt="" src="' + esc(img) + '" />' +
           '<div>' +
             '<div class="prod__fields">' +
-              '<label><span>Name</span><input data-field="name" value="' + esc(p.name) + '" /></label>' +
-              '<label><span>Price (TZS)</span><input data-field="price_tzs" type="number" min="0" step="1000" value="' + esc(Number(p.price_tzs) || 0) + '" /></label>' +
-              '<label><span>Position</span><input data-field="position" type="number" value="' + esc(p.position || 0) + '" /></label>' +
+              '<label><span>Name</span><input data-field="name" value="' + esc(nameVal) + '" /></label>' +
+              '<label><span>Price (TZS)</span><input data-field="price_tzs" type="number" min="0" step="1000" value="' + esc(Number(priceVal) || 0) + '" /></label>' +
+              '<label><span>Position</span><input data-field="position" type="number" value="' + esc(Number(posVal) || 0) + '" /></label>' +
               '<label><span>Category</span><select data-field="category">' +
-                '<option value="men"' + (p.category === "men" ? " selected" : "") + '>Men</option>' +
-                '<option value="women"' + (p.category === "women" ? " selected" : "") + '>Women</option>' +
+                '<option value="men"' + (catVal === "men" ? " selected" : "") + '>Men</option>' +
+                '<option value="women"' + (catVal === "women" ? " selected" : "") + '>Women</option>' +
               '</select></label>' +
             '</div>' +
             '<div class="prod__meta">' +
-              '<span class="pill ' + (p.active ? "on" : "off") + '">' + (p.active ? "Active" : "Hidden") + '</span>' +
-              '<label style="display:flex;align-items:center;gap:.4rem;margin-left:.3rem"><input type="checkbox" data-field="active"' + (p.active ? " checked" : "") + ' /> Visible</label>' +
-              '<span style="opacity:.7">' + esc(money(p.price_tzs)) + '</span>' +
+              '<span class="pill ' + (actVal ? "on" : "off") + '">' + (actVal ? "Active" : "Hidden") + '</span>' +
+              '<label style="display:flex;align-items:center;gap:.4rem;margin-left:.3rem"><input type="checkbox" data-field="active"' + (actVal ? " checked" : "") + ' /> Visible</label>' +
+              '<span style="opacity:.7">' + esc(money(priceVal)) + '</span>' +
             '</div>' +
+            '<div class="prod__note"></div>' +
           '</div>' +
           '<div class="prod__actions">' +
             '<label class="btn ghost small">Image<input type="file" accept="image/*" data-action="image" hidden /></label>' +
@@ -885,6 +937,13 @@
     };
   }
 
+  // Remember what the admin has typed so a re-render does not throw it away.
+  function markDirty(card) {
+    var id = card.getAttribute("data-id");
+    if (!id || id.indexOf("default-") === 0) return;
+    dirty[id] = rowData(card);
+  }
+
   async function saveProduct(id, card) {
     var d = rowData(card);
     if (!d.name) { toast("A product needs a name.", "error"); return; }
@@ -898,23 +957,57 @@
     btn.disabled = false; btn.textContent = "Save";
     if (res.error) { toast("Save failed: " + fail(res.error, "save"), "error"); return; }
     delete pendingImages[id];
+    delete dirty[id];
     toast("Product saved.", "ok");
     loadProducts();
   }
 
   async function uploadProductImage(id, file, card) {
     if (!file) return;
-    if (IMAGE_TYPES.indexOf(file.type) === -1) { toast("Use a JPG, PNG, WebP or AVIF image.", "error"); return; }
-    if (file.size > LIMITS.image) { toast("Image is larger than 10 MB.", "error"); return; }
+
+    // The list re-renders when it reloads, so look the row up again rather
+    // than trusting the reference we were handed.
+    function el() { return document.querySelector('.prod[data-id="' + id + '"]'); }
+    var note = card ? card.querySelector(".prod__note") : null;
+    var rule = window.MwemtsiRules ? window.MwemtsiRules.PRODUCT_IMAGE : null;
+
+    if (rule) {
+      var check = await window.MwemtsiRules.validate(file, rule);
+      if (!check.ok) {
+        var live = el();
+        var n = live && live.querySelector(".prod__note");
+        if (n) { n.textContent = check.errors.join("\n"); n.className = "prod__note error"; }
+        toast("Upload refused — see the note on the product.", "error");
+        return;
+      }
+      if (note) {
+        note.textContent = check.warnings.join("\n");
+        note.className = "prod__note " + (check.warnings.length ? "warn" : "ok");
+      }
+    }
+
     var path = "products/" + id + "-" + Date.now() + "." + fileExt(file.name, "jpg");
     toast("Uploading image…");
     var up = await sb.storage.from("media").upload(path, file, { cacheControl: "3600", upsert: false, contentType: file.type });
-    if (up.error) { toast("Upload failed: " + fail(up.error, "upload"), "error"); return; }
+    if (up.error) {
+      var row = el();
+      var rn = row && row.querySelector(".prod__note");
+      if (rn) { rn.textContent = "Upload failed: " + fail(up.error, "upload"); rn.className = "prod__note error"; }
+      toast("Upload failed: " + fail(up.error, "upload"), "error");
+      return;
+    }
     var pub = sb.storage.from("media").getPublicUrl(path);
     var url = pub && pub.data ? pub.data.publicUrl : "";
     pendingImages[id] = url;
-    var img = card.querySelector(".prod__img");
+    var current = el();
+    var img = current && current.querySelector(".prod__img");
     if (img) img.src = url;
+    var cn = current && current.querySelector(".prod__note");
+    if (cn) {
+      cn.textContent = (check && check.warnings.length ? check.warnings.join("\n") + "\n" : "") +
+        "Image uploaded — press Save to apply.";
+      cn.className = "prod__note " + (check && check.warnings.length ? "warn" : "ok");
+    }
     toast("Image uploaded — press Save to apply.", "ok");
   }
 
@@ -922,7 +1015,7 @@
   async function loadMedia() {
     if (!sb) return;
     mediaOverrides = {};
-    var res = await sb.from("site_media").select("key,url,kind,updated_at");
+    var res = await sb.from("site_media").select("key,url,kind,poster_url,updated_at");
     if (res.error) {
       toast("Could not load media overrides: " + fail(res.error, "media"), "error");
     } else {
@@ -938,8 +1031,19 @@
       var over = mediaOverrides[slot.key];
       var src = over ? over.url : slot.fallback;
       var preview = slot.kind === "video"
-        ? '<video src="' + esc(src) + '" muted loop playsinline preload="metadata" controls></video>'
+        ? '<video src="' + esc(src) + '"' + (over && over.poster_url ? ' poster="' + esc(over.poster_url) + '"' : "") +
+          ' muted loop playsinline preload="metadata" controls></video>'
         : '<img src="' + esc(src) + '" alt="" />';
+
+      var rule = window.MwemtsiRules ? window.MwemtsiRules.ruleForSlot(slot.key) : null;
+      var rules = "";
+      if (rule) {
+        rules = '<ul class="media-card__rules">' +
+          window.MwemtsiRules.summary(rule).map(function (row) {
+            return '<li><span><b>' + esc(row.label) + "</b> " + esc(row.value) + "</span></li>";
+          }).join("") + "</ul>";
+      }
+
       return '' +
         '<article class="media-card" data-key="' + esc(slot.key) + '" data-kind="' + slot.kind + '">' +
           '<div class="media-card__preview">' + preview +
@@ -951,13 +1055,13 @@
               '<div class="media-card__key">' + esc(slot.key) + ' · ' + esc(slot.page) + '</div>' +
             '</div>' +
             '<div class="progress" hidden><i></i></div>' +
-            '<div class="media-card__note"></div>' +
+            '<div class="media-card__note media-card__status"></div>' +
             '<div class="media-card__actions">' +
               '<label class="btn small">Choose ' + (slot.kind === "video" ? "video" : "photo") +
                 '<input type="file" data-action="upload" accept="' + (slot.kind === "video" ? "video/*" : "image/*") + '" hidden /></label>' +
               '<button class="btn ghost small" data-action="reset"' + (over ? "" : " disabled") + '>Reset to default</button>' +
             '</div>' +
-            '<div class="media-card__note">' + (slot.kind === "video" ? "MP4/WebM · max 50 MB" : "JPG/WebP/PNG · max 10 MB") + '</div>' +
+            rules +
           '</div>' +
         '</article>';
     }).join("");
@@ -968,9 +1072,11 @@
   }
 
   function mediaNote(card, text, cls) {
-    var n = card.querySelector(".media-card__note");
+    if (!card) return;
+    var n = card.querySelector(".media-card__status");
+    if (!n) return;
     n.textContent = text;
-    n.className = "media-card__note" + (cls ? " " + cls : "");
+    n.className = "media-card__note media-card__status" + (cls ? " " + cls : "");
   }
 
   async function uploadMedia(card, file) {
@@ -979,63 +1085,116 @@
     var slot = MEDIA_SLOTS.find(function (s) { return s.key === key; });
     if (!file) return;
 
-    if (kind === "video") {
-      if (VIDEO_TYPES.indexOf(file.type) === -1) { mediaNote(card, "That is not a supported video. Use MP4 or WebM.", "error"); return; }
-      if (file.size > LIMITS.video) { mediaNote(card, "Video is " + (file.size / 1048576).toFixed(1) + " MB — the limit is 50 MB.", "error"); return; }
-    } else {
-      if (IMAGE_TYPES.indexOf(file.type) === -1) { mediaNote(card, "That is not a supported image. Use JPG, PNG, WebP or AVIF.", "error"); return; }
-      if (file.size > LIMITS.image) { mediaNote(card, "Image is " + (file.size / 1048576).toFixed(1) + " MB — the limit is 10 MB.", "error"); return; }
+    // The list can be re-rendered while the file is uploading, which leaves
+    // the card we were handed detached. Look it up again every time.
+    function el() { return document.querySelector('.media-card[data-key="' + key + '"]'); }
+    function note(text, cls) { mediaNote(el(), text, cls); }
+
+    var rule = window.MwemtsiRules ? window.MwemtsiRules.ruleForSlot(key) : null;
+    if (!rule) {
+      note("No upload rules are configured for this slot.", "error");
+      return;
     }
 
-    var bar = card.querySelector(".progress");
-    var fill = card.querySelector(".progress i");
-    bar.hidden = false;
-    fill.style.width = "12%";
-    mediaNote(card, "Uploading…");
+    // Check the file against the slot's rules before anything leaves the
+    // machine. A refused upload is cheaper than a broken page.
+    note("Checking the file…");
+    var check = await window.MwemtsiRules.validate(file, rule);
+    if (!check.ok) {
+      note(check.errors.join("\n"), "error");
+      toast("Upload refused — see the note on the card.", "error");
+      return;
+    }
+    if (check.warnings.length) {
+      note(check.warnings.join("\n"), "warn");
+    }
+
+    var bar = el() ? el().querySelector(".progress") : null;
+    var fill = bar ? bar.querySelector("i") : null;
+    if (bar) bar.hidden = false;
+    if (fill) fill.style.width = "12%";
+    note("Uploading…");
+
+    // A video slot needs a matching poster frame, otherwise the page keeps
+    // showing the old shot until the new clip starts playing.
+    var posterBlob = null;
+    if (kind === "video") {
+      try {
+        posterBlob = await window.MwemtsiRules.capturePoster(file, 0.4);
+      } catch (e) {
+        posterBlob = null;
+      }
+    }
 
     var path = "site/" + key + "-" + Date.now() + "." + fileExt(file.name, kind === "video" ? "mp4" : "jpg");
     var up = await sb.storage.from("media").upload(path, file, {
       cacheControl: "3600", upsert: false, contentType: file.type
     });
     if (up.error) {
-      bar.hidden = true;
-      mediaNote(card, "Upload failed: " + fail(up.error, "upload"), "error");
+      if (bar) bar.hidden = true;
+      note("Upload failed: " + fail(up.error, "upload"), "error");
       toast("Upload failed: " + fail(up.error, "upload"), "error");
       return;
     }
-    fill.style.width = "70%";
+    if (fill) fill.style.width = "70%";
 
     var pub = sb.storage.from("media").getPublicUrl(path);
     var url = pub && pub.data ? pub.data.publicUrl : "";
+
+    var posterUrl = "";
+    if (posterBlob) {
+      var posterPath = "site/" + key + "-" + Date.now() + "-poster.jpg";
+      var pu = await sb.storage.from("media").upload(posterPath, posterBlob, {
+        cacheControl: "3600", upsert: false, contentType: "image/jpeg"
+      });
+      if (!pu.error) {
+        var ppub = sb.storage.from("media").getPublicUrl(posterPath);
+        posterUrl = ppub && ppub.data ? ppub.data.publicUrl : "";
+      }
+    }
+
     var row = {
       key: key,
       url: url,
       kind: kind,
       label: slot ? slot.label : key,
+      poster_url: posterUrl,
       updated_at: new Date().toISOString(),
       updated_by: me ? me.id : null
     };
     var saved = await sb.from("site_media").upsert(row, { onConflict: "key" });
     if (saved.error) {
-      bar.hidden = true;
-      mediaNote(card, "File uploaded but could not be activated: " + fail(saved.error, "site_media"), "error");
+      if (bar) bar.hidden = true;
+      note("File uploaded but could not be activated: " + fail(saved.error, "site_media"), "error");
       toast("Could not activate the new file: " + fail(saved.error, "site_media"), "error");
       return;
     }
-    fill.style.width = "100%";
+    if (fill) fill.style.width = "100%";
 
-    var preview = card.querySelector(".media-card__preview");
-    preview.querySelector("img, video").outerHTML = kind === "video"
-      ? '<video src="' + esc(url) + '" muted loop playsinline preload="metadata" controls></video>'
-      : '<img src="' + esc(url) + '" alt="" />';
-    var badge = preview.querySelector(".media-card__badge");
-    badge.textContent = "Live · custom";
-    badge.classList.add("live");
-    card.querySelector('[data-action="reset"]').disabled = false;
+    var preview = el() ? el().querySelector(".media-card__preview") : null;
+    if (preview && preview.querySelector("img, video")) {
+      preview.querySelector("img, video").outerHTML = kind === "video"
+        ? '<video src="' + esc(url) + '"' + (posterUrl ? ' poster="' + esc(posterUrl) + '"' : "") +
+          ' muted loop playsinline preload="metadata" controls></video>'
+        : '<img src="' + esc(url) + '" alt="" />';
+    }
+    var live = el();
+    if (live) {
+      var badge = live.querySelector(".media-card__badge");
+      if (badge) { badge.textContent = "Live · custom"; badge.classList.add("live"); }
+      var resetBtn = live.querySelector('[data-action="reset"]');
+      if (resetBtn) resetBtn.disabled = false;
+    }
 
     mediaOverrides[key] = row;
-    setTimeout(function () { bar.hidden = true; fill.style.width = "0"; }, 900);
-    mediaNote(card, "Live. Reload the public page (hard refresh) to see it.", "ok");
+    setTimeout(function () {
+      var b = el() ? el().querySelector(".progress") : null;
+      if (b) { b.hidden = true; b.querySelector("i").style.width = "0"; }
+    }, 900);
+    var msg = check.warnings.length
+      ? check.warnings.join("\n") + "\n\nLive. Reload the public page (hard refresh) to see it."
+      : "Live. Reload the public page (hard refresh) to see it.";
+    note(msg, check.warnings.length ? "warn" : "ok");
     toast("Replacement is live.", "ok");
     refreshDashboard();
   }
@@ -1160,15 +1319,24 @@
         if (!window.confirm('Delete "' + (p ? p.name : "this product") + '"? This cannot be undone.')) return;
         var res = await sb.from("products").delete().eq("id", id);
         if (res.error) { toast("Delete failed: " + fail(res.error, "delete"), "error"); return; }
+        delete dirty[id];
+        delete pendingImages[id];
         toast("Product deleted.", "ok");
         loadProducts();
       }
     });
 
+    $("productList").addEventListener("input", function (e) {
+      var card = e.target.closest(".prod");
+      if (card) markDirty(card);
+    });
+
     $("productList").addEventListener("change", function (e) {
       var input = e.target;
-      if (input.getAttribute("data-action") !== "image") return;
       var card = input.closest(".prod");
+      if (card) markDirty(card);
+      if (input.getAttribute("data-action") !== "image") return;
+      if (!card) return;
       var id = card.getAttribute("data-id");
       var key = id.indexOf("default-") === 0 ? null : id;
       if (!key) { toast("Save this product first, then change its image.", "error"); return; }

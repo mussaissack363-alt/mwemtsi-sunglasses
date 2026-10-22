@@ -41,6 +41,20 @@
     }
   }
 
+  // Wrap a URL for use inside a CSS url("...") value. An unescaped quote,
+  // backslash or bracket in the URL ends the string early and takes the
+  // whole declaration with it, which blanks the hero image.
+  function cssUrl(url) {
+    var escaped = String(url)
+      .replace(/\\/g, "%5C")
+      .replace(/"/g, "%22")
+      .replace(/'/g, "%27")
+      .replace(/\(/g, "%28")
+      .replace(/\)/g, "%29")
+      .replace(/[\r\n]/g, "");
+    return 'url("' + escaped + '")';
+  }
+
   function applyImage(el, url) {
     var probe = new Image();
     var done = false;
@@ -53,12 +67,19 @@
       done = true;
       clearTimeout(timer);
       if (el.tagName === "IMG") {
+        var original = el.getAttribute("src");
+        el.onerror = function () {
+          // The file was readable a moment ago but is not any more.
+          el.onerror = null;
+          if (original) el.src = original;
+          warn("image broke after swap, reverted: " + url);
+        };
         el.src = url;
       } else {
         // Background slots (e.g. the Men/Women page heroes) expose the
         // image through a CSS custom property so the gradient overlay
         // on ::before keeps working.
-        el.style.setProperty("--media-bg", 'url("' + url.replace(/"/g, "%22") + '")');
+        el.style.setProperty("--media-bg", cssUrl(url));
       }
     };
     probe.onerror = function () {
@@ -70,10 +91,12 @@
     probe.src = url;
   }
 
-  function applyVideo(el, url) {
+  function applyVideo(el, url, posterUrl) {
     var probe = document.createElement("video");
     var done = false;
     var wasPlaying = !el.paused;
+    var original = el.getAttribute("src");
+    var originalPoster = el.getAttribute("poster");
 
     function finish(ok) {
       if (done) return;
@@ -83,7 +106,11 @@
       probe.load();
       if (!ok) return;
 
-      var original = el.getAttribute("src");
+      // The poster belongs to the clip, so it has to be swapped with it.
+      // Otherwise the page keeps showing the previous shot until the new
+      // video starts playing.
+      if (posterUrl) el.setAttribute("poster", posterUrl);
+
       el.src = url;
       el.load();
 
@@ -93,6 +120,8 @@
         if (original) {
           el.src = original;
           el.load();
+          if (originalPoster) el.setAttribute("poster", originalPoster);
+          else el.removeAttribute("poster");
           if (wasPlaying) el.play().catch(function () {});
         }
         warn("video failed after swap, reverted: " + url);
@@ -120,7 +149,7 @@
     var kind = row.kind === "video" ? "video" : "image";
     targets(row.key).forEach(function (el) {
       try {
-        if (kind === "video" || el.tagName === "VIDEO") applyVideo(el, row.url);
+        if (kind === "video" || el.tagName === "VIDEO") applyVideo(el, row.url, row.poster_url);
         else applyImage(el, row.url);
       } catch (e) {
         warn("apply failed for " + row.key, e);
@@ -132,7 +161,7 @@
     var sb = client();
     if (!sb) return;
     try {
-      Promise.resolve(sb.from("site_media").select("key,url,kind"))
+      Promise.resolve(sb.from("site_media").select("key,url,kind,poster_url"))
         .then(function (res) {
           if (res && res.error) {
             warn("could not read site_media (admin overrides skipped)", res.error.message);
