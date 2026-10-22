@@ -127,6 +127,8 @@
     letter-spacing: 0.04em;
     text-transform: uppercase;
     line-height: 0.95;
+    /* Tight line-height clips the descenders of the last line. */
+    padding-bottom: .08em;
     margin-bottom: 1.4rem;
   }
 
@@ -214,6 +216,8 @@
     line-height: 0.9;
     text-transform: uppercase;
     text-align: center;
+    /* Tight line-height clips the descenders of the last line. */
+    padding-bottom: .12em;
     opacity: 0;
     transform: translateY(40px);
     will-change: opacity, transform, color;
@@ -464,11 +468,22 @@
     font-weight: 300;
   }
 
+  @media (max-width: 900px) {
+    /* UNAPOLOGETICALLY is 10.26em wide. Above this size it no longer fits
+       on a phone and the frame cuts it off, so it is scaled down until the
+       whole word is on screen. */
+    .story__text {
+      font-size: clamp(1.5rem, 8.2vw, 4.5rem);
+      max-width: 100%;
+      overflow-wrap: break-word;
+    }
+  }
+
   @media (max-width: 720px) {
     .nav__links { display: none; }
     .footer { flex-direction: column; align-items: flex-start; }
     .story { height: 220vh; }
-    .story__text { font-size: clamp(2.6rem, 12vw, 5rem); }
+    .story__overlay { padding: 0 1rem; }
     .hero__title { font-size: clamp(2.6rem, 10vw, 4rem); }
     .products__grid { grid-template-columns: 1fr; }
     .story__video { object-fit: cover; }

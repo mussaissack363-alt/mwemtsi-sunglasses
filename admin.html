@@ -243,7 +243,11 @@
     border: 1px solid var(--line); border-radius: 9px;
     background: rgba(245,242,236,.025);
     font-size: .71rem; line-height: 1.6; color: var(--muted);
+    /* The rules are long. Keep them folded away so the list stays short on
+       a phone, but show them on a wide screen where there is room. */
+    display: none;
   }
+  .media-card__rules.is-open { display: block; }
   .media-card__rules li { display: flex; gap: .5rem; }
   .media-card__rules li::before { content: ""; flex: 0 0 4px; height: 4px; border-radius: 50%; background: var(--gold); margin-top: .55em; }
   .media-card__rules b { color: var(--paper); font-weight: 600; }
@@ -252,6 +256,10 @@
     padding: 0; text-decoration: underline; text-underline-offset: 2px;
   }
   .rules-toggle:hover { color: var(--paper); }
+  @media (min-width: 900px) {
+    .media-card__rules { display: block; }
+    .rules-toggle { display: none; }
+  }
   .progress { height: 4px; border-radius: 999px; background: var(--ink-3); overflow: hidden; }
   .progress i { display: block; height: 100%; width: 0; background: var(--gold); transition: width .2s; }
 
@@ -333,6 +341,11 @@
     .prod__fields { grid-template-columns: 1fr 1fr; }
     .grid-4 { grid-template-columns: 1fr; }
     .card { padding: 1.5rem; }
+  }
+  /* On a small phone two columns squeeze the fields too tightly to read. */
+  @media (max-width: 360px) {
+    .prod__fields { grid-template-columns: 1fr; }
+    .media-card__body { padding: .8rem; }
   }
 </style>
 </head>
@@ -1041,7 +1054,8 @@
         rules = '<ul class="media-card__rules">' +
           window.MwemtsiRules.summary(rule).map(function (row) {
             return '<li><span><b>' + esc(row.label) + "</b> " + esc(row.value) + "</span></li>";
-          }).join("") + "</ul>";
+          }).join("") + "</ul>" +
+          '<button class="rules-toggle" data-action="rules">Show what this slot requires</button>';
       }
 
       return '' +
@@ -1345,6 +1359,18 @@
     });
 
     $("mediaList").addEventListener("click", function (e) {
+      var toggle = e.target.closest('[data-action="rules"]');
+      if (toggle) {
+        var tcard = toggle.closest(".media-card");
+        var list = tcard && tcard.querySelector(".media-card__rules");
+        if (list) {
+          list.classList.toggle("is-open");
+          toggle.textContent = list.classList.contains("is-open")
+            ? "Hide the requirements"
+            : "Show what this slot requires";
+        }
+        return;
+      }
       var btn = e.target.closest('[data-action="reset"]');
       if (!btn) return;
       var card = btn.closest(".media-card");

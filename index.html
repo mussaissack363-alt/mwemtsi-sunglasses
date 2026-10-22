@@ -333,6 +333,8 @@
     font-size: clamp(3.1rem, 8vw, 6.6rem);
     line-height: 1.02;
     letter-spacing: -0.012em;
+    /* Tight line-height clips the descenders of the last line. */
+    padding-bottom: .08em;
     margin-bottom: 1.6rem;
     color: var(--ink);
   }
@@ -676,6 +678,8 @@
   .cat__name {
     font-size: clamp(2.4rem, 5vw, 4rem);
     line-height: 1;
+    /* Tight line-height clips the descenders of the last line. */
+    padding-bottom: .08em;
     margin-bottom: 1.4rem;
   }
 
